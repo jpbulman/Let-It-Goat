@@ -26,8 +26,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:hint="@string/wpi_username"
-            android:text="jpbulman@wpi.edu"/>
+            android:hint="@string/wpi_username"/>
 
         <EditText
             android:id="@+id/passwordField"
