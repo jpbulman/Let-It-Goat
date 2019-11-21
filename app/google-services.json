@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "706542343125",
+    "firebase_url": "https://let-it-goat.firebaseio.com",
+    "project_id": "let-it-goat",
+    "storage_bucket": "let-it-goat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706542343125:android:7c6d7e44284117752ae35c",
+        "android_client_info": {
+          "package_name": "com.example.letitgoat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706542343125-jdul064gkpvktv87mh5t68g5m0mpurau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL-DHp14Ohsia7W6vqSzmZ3CNrtfNQeB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706542343125-jdul064gkpvktv87mh5t68g5m0mpurau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
