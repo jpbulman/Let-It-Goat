@@ -30,11 +30,6 @@ class HomeFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
-        newItemButton.setOnClickListener {
-            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
-        }
-
         return root
     }
 
