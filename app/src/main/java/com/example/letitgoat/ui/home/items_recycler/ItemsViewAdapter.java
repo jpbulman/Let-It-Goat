@@ -1,13 +1,11 @@
 package com.example.letitgoat.ui.home.items_recycler;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +16,9 @@ class ItemsViewAdapter extends RecyclerView.Adapter<ItemsViewAdapter.ItemsViewHo
     private ItemClickListener mClickListener;
 
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    // Provide a reference to the views for each data single_item
+    // Complex data items may need more than one view per single_item, and
+    // you provide access to all the views for a data single_item in a view holder
     public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView image;
         private TextView name;
@@ -47,7 +45,7 @@ class ItemsViewAdapter extends RecyclerView.Adapter<ItemsViewAdapter.ItemsViewHo
     public ItemsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.item, parent, false);
+        View view = inflater.inflate(R.layout.single_item, parent, false);
         ItemsViewHolder viewHolder = new ItemsViewHolder(view);
         return viewHolder;
     }
