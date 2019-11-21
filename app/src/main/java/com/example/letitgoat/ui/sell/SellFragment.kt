@@ -1,12 +1,15 @@
 package com.example.letitgoat.ui.sell
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
 
 class SellFragment : Fragment() {
@@ -22,12 +25,14 @@ class SellFragment : Fragment() {
     ): View? {
         sellViewModel=
             ViewModelProviders.of(this).get(SellViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_messages, container, false)
-        val textView: TextView = root.findViewById(R.id.text_messages)
-        sellViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
+        val root = inflater.inflate(R.layout.fragment_sell, container, false)
         setHasOptionsMenu(true)
+
+        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
+        newItemButton.setOnClickListener {
+            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
+        }
+
         return root
     }
 
@@ -35,12 +40,12 @@ class SellFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
             isIconifiedByDefault = true
             queryHint = "settings?"
         }
 
-        menu?.findItem(R.id.search)?.isVisible = false
+        menu.findItem(R.id.search)?.isVisible = false
         activity?.invalidateOptionsMenu()
     }
 }
