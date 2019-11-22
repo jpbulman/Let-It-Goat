@@ -24,6 +24,17 @@
         android:src="@drawable/icons8_camera_24"
         android:layout_marginStart="57.5dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/profilePicture"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:id="@+id/displayUsersFullName"
+        android:text="John Smith" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

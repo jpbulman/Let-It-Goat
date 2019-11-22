@@ -50,6 +50,9 @@ class SettingsFragment : Fragment() {
             dispatchTakePictureIntent()
         }
 
+        val displayUsersFullName = root.findViewById<TextView>(R.id.displayUsersFullName)
+        displayUsersFullName.text = MainActivity.user!!.name
+
         return root
     }
 
@@ -67,6 +70,7 @@ class SettingsFragment : Fragment() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap
             activity!!.findViewById<ImageView>(R.id.profilePicture).setImageBitmap(imageBitmap)
+
         }
     }
 

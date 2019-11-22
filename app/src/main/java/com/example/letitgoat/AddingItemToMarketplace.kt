@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import com.example.letitgoat.ui.db_models.Item
+import com.example.letitgoat.db_models.Item
 import com.google.firebase.firestore.FirebaseFirestore
 import org.jetbrains.anko.toast
 import java.lang.NumberFormatException
