@@ -1,4 +1,4 @@
-package com.example.letitgoat.ui.db_models
+package com.example.letitgoat.db_models
 
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
