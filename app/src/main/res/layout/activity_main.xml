@@ -1,56 +1,113 @@
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorPrimary"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_weight="2" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="117dp"
+        android:layout_height="128dp"
         android:layout_gravity="center"
+        android:layout_weight="1"
         android:src="@drawable/wpi" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_weight="4" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="218dp"
         android:layout_gravity="center|bottom"
+        android:layout_weight="3"
+        android:orientation="vertical"
         android:paddingTop="50dp">
 
-        <EditText
-            android:id="@+id/usernameField"
-            android:textColor="@color/colorAccent"
-            android:textColorHint="@color/colorAccent"
-            android:backgroundTint="@color/colorAccent"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="@string/wpi_username"/>
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/passwordField"
-            android:textColor="@color/colorAccent"
-            android:textColorHint="@color/colorAccent"
-            android:backgroundTint="@color/colorAccent"
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="1dp"
+                android:layout_weight="3" />
+
+            <EditText
+                android:id="@+id/usernameField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:backgroundTint="#ac2b37"
+                android:ems="10"
+                android:hint="@string/wpi_username"
+                android:inputType="text"
+                android:text="jpbulman@wpi.edu"
+                android:textColor="#000000"
+                android:textColorHint="#000000" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="10dp"
+                android:layout_weight="3" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/password"
-            android:inputType="textPassword"/>
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="10dp"
+                android:layout_weight="3" />
+
+            <EditText
+                android:id="@+id/passwordField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="40"
+                android:backgroundTint="#ac2b37"
+                android:ems="10"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textColor="#000000"
+                android:textColorHint="#000000" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="10dp"
+                android:layout_weight="3" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
         <Button
             android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:background="#AC2B37"
             android:onClick="login"
-            android:textColor="@color/colorAccent"
-            android:text="Login" />
+            android:text="Login"
+            android:textColor="#FFFFFF" />
 
-<!--        <Button-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:id="@+id/newItem"/>-->
+        <!--        <Button-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:id="@+id/newItem"/>-->
 
     </LinearLayout>
 
