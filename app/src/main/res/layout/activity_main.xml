@@ -48,6 +48,7 @@
                 android:layout_weight="40"
                 android:backgroundTint="#ac2b37"
                 android:ems="10"
+                android:textCursorDrawable="@null"
                 android:hint="@string/wpi_username"
                 android:inputType="text"
                 android:textColor="#000000"
@@ -77,6 +78,7 @@
                 android:layout_weight="40"
                 android:backgroundTint="#ac2b37"
                 android:ems="10"
+                android:textCursorDrawable="@null"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:textColor="#000000"
@@ -99,14 +101,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="#AC2B37"
-            android:onClick="login"
             android:text="Login"
             android:textColor="#FFFFFF" />
-
-        <!--        <Button-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:id="@+id/newItem"/>-->
 
     </LinearLayout>
 

@@ -1,29 +1,26 @@
 package com.example.letitgoat.ui.settings
 
 import android.app.Activity.RESULT_OK
-import android.content.ContentValues
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.*
 import android.widget.*
-import androidx.core.content.FileProvider
-import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.letitgoat.MainActivity
 import com.example.letitgoat.R
-import java.io.File
-import java.nio.file.Files.createFile
+import com.example.letitgoat.db_models.User
+import com.google.firebase.firestore.FirebaseFirestore
+import java.io.ByteArrayOutputStream
 
 class SettingsFragment : Fragment() {
 
     private lateinit var settingsViewModel: SettingsViewModel
-
+    private lateinit var database: FirebaseFirestore
     private var menu: Menu? = null
 
     override fun onCreateView(
@@ -35,12 +32,18 @@ class SettingsFragment : Fragment() {
             ViewModelProviders.of(this).get(SettingsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
 
+        database = FirebaseFirestore.getInstance()
+
         setHasOptionsMenu(true)
 
         val logoutButton = root.findViewById<Button>(R.id.logoutButton)
 
         logoutButton.setOnClickListener{
-            MainActivity.user = null
+            MainActivity.user = User(
+                name ="dev",
+                email ="notloggedin@wpi.edu",
+                profilePicture = ""
+            )
             startActivity(Intent(activity, MainActivity::class.java))
         }
 
@@ -51,7 +54,12 @@ class SettingsFragment : Fragment() {
         }
 
         val displayUsersFullName = root.findViewById<TextView>(R.id.displayUsersFullName)
-        displayUsersFullName.text = MainActivity.user!!.name
+        displayUsersFullName.text = MainActivity.user.name
+
+        val profilePicture = root.findViewById<ImageView>(R.id.profilePicture)
+        profilePicture.rotation = -90f
+        val encodeByte = Base64.decode(MainActivity.user.profilePicture, Base64.DEFAULT)
+        profilePicture.setImageBitmap(BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size))
 
         return root
     }
@@ -60,17 +68,30 @@ class SettingsFragment : Fragment() {
 
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-//            takePictureIntent.resolveActivity(getPackageManager())?.also {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-//            }
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
         }
     }
 
+    //Camera returns
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap
-            activity!!.findViewById<ImageView>(R.id.profilePicture).setImageBitmap(imageBitmap)
+            val profilePicture = activity!!.findViewById<ImageView>(R.id.profilePicture)
+            profilePicture.setImageBitmap(imageBitmap)
+            profilePicture.rotation = -90f
 
+            val baos = ByteArrayOutputStream()
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            val b = baos.toByteArray()
+            val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
+
+            MainActivity.user = User(
+                name = MainActivity.user.name,
+                email = MainActivity.user.email,
+                profilePicture = bitmapAsString
+            )
+
+            database.collection("Users").document(MainActivity.user.email).set(MainActivity.user)
         }
     }
 
