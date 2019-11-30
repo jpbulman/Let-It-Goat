@@ -1,7 +1,7 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <!--    <HorizontalScrollView-->
@@ -25,10 +25,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/wpi" />
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/wpi" />
+
+            <ImageButton
+                android:id="@+id/newProfilePictureButton"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icons8_camera_24"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,14 +52,15 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
+                android:textColor="#000000"
+                android:textCursorDrawable="@null"
                 android:id="@+id/itemNameField"
                 android:hint="Item name" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
+                android:textColor="#000000"
                 android:gravity="center"
                 android:textSize="15sp"
                 android:id="@+id/sellerName"
@@ -59,13 +74,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="#000000"
                     android:text="@string/dollarsign" />
 
                 <EditText
                     android:paddingTop="50dp"
                     android:id="@+id/priceField"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="#000000"
+                    android:textCursorDrawable="@null"
                     android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,11 +96,12 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
+        android:textColor="#000000"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
+        android:textCursorDrawable="@null"
         android:id="@+id/descriptionField"
         android:hint="Description of your product"/>
 

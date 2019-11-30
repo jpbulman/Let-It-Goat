@@ -28,7 +28,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
         }
 
         val sellerName = findViewById<TextView>(R.id.sellerName)
-        sellerName.text = "Being sold by: ${MainActivity.user!!.name}"
+        sellerName.text = "Being sold by: ${MainActivity.user.name}"
     }
 
     private fun addItemToMarketplace(){
@@ -57,7 +57,8 @@ class AddingItemToMarketplace : AppCompatActivity() {
             price = price,
             user = user,
             description = description,
-            postedTimeStamp = currTime
+            postedTimeStamp = currTime,
+            stringsOfBitmapofPicuresOfItem = Collections.emptyList()
         )
 
         //Adds item to db
