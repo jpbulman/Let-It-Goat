@@ -33,10 +33,11 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/wpi" />
+                android:src="@drawable/wpi"
+                android:id="@+id/itemAboutToBeSoldPicture" />
 
             <ImageButton
-                android:id="@+id/newProfilePictureButton"
+                android:id="@+id/newItemPictureButton"
                 android:layout_width="75dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/icons8_camera_24"
