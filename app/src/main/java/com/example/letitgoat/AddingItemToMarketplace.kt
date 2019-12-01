@@ -3,6 +3,7 @@ package com.example.letitgoat
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,10 +15,13 @@ import org.jetbrains.anko.toast
 import java.io.ByteArrayOutputStream
 import java.lang.NumberFormatException
 import java.util.*
+import kotlin.collections.ArrayList
+
 
 class AddingItemToMarketplace : AppCompatActivity() {
 
     private lateinit var database: FirebaseFirestore
+    private var stringsOfBitmapsOfItems: List<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,15 +46,13 @@ class AddingItemToMarketplace : AppCompatActivity() {
     val REQUEST_IMAGE_CAPTURE = 1
 
     private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        }
+        val inten = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(inten, REQUEST_IMAGE_CAPTURE)
     }
 
     //Camera returns
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap
             val picOfAboutToSellItem = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
@@ -61,14 +63,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
             val b = baos.toByteArray()
             val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
-
-//            MainActivity.user = User(
-//                name = MainActivity.user.name,
-//                email = MainActivity.user.email,
-//                profilePicture = bitmapAsString
-//            )
-//
-//            database.collection("Users").document(MainActivity.user.email).set(MainActivity.user)
+            this.stringsOfBitmapsOfItems += bitmapAsString
         }
     }
 
@@ -92,13 +87,17 @@ class AddingItemToMarketplace : AppCompatActivity() {
             validInput = false
         }
 
+        if(this.stringsOfBitmapsOfItems.isEmpty()){
+            validInput = false
+        }
+
         val item = Item(
             name = name,
             price = price,
             user = user,
             description = description,
             postedTimeStamp = currTime,
-            stringsOfBitmapofPicuresOfItem = Collections.emptyList()
+            stringsOfBitmapofPicuresOfItem = this.stringsOfBitmapsOfItems
         )
 
         //Adds item to db
