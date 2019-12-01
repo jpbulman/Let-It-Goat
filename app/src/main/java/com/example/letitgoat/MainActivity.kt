@@ -14,13 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import org.jetbrains.anko.doAsync
 import android.graphics.Bitmap
-import android.R.attr.bitmap
-import android.R.attr.resource
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Base64
-import kotlinx.android.synthetic.main.fragment_settings.*
 import java.io.ByteArrayOutputStream
 
 

@@ -99,7 +99,7 @@ class SettingsFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
             isIconifiedByDefault = true
             queryHint = "settings?"
         }
