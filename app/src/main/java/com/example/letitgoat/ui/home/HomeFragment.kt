@@ -1,26 +1,29 @@
 package com.example.letitgoat.ui.home
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
-import com.example.letitgoat.AddingItemToMarketplace
+import androidx.viewpager.widget.ViewPager
 import com.example.letitgoat.R
-import com.example.letitgoat.ui.home.items_recycler.ItemsRecyclerFragment
+import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
+import com.google.android.material.tabs.TabLayout
+import java.lang.ref.WeakReference
+import java.util.*
 
 
 class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
-    ItemsRecyclerFragment.OnFragmentInteractionListener  {
+    BuyRecyclerFragment.OnFragmentInteractionListener  {
 
     private lateinit var homeViewModel: HomeViewModel
 
     private var root: View? = null
     private var menu: Menu? = null
+
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var viewPager: ViewPager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,23 +43,39 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 //            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
 //        }
 
-
-
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val list_fragment: ArrayList<Fragment> = ArrayList()
+        list_fragment.add(BuyRecyclerFragment())
+        list_fragment.add(BuyRecyclerFragment())
+        list_fragment.add(BuyRecyclerFragment())
+        list_fragment.add(BuyRecyclerFragment())
+        list_fragment.add(BuyRecyclerFragment())
+        list_fragment.add(BuyRecyclerFragment())
+        val list_title: ArrayList<String> = ArrayList()
+        list_title.add("All")
+        list_title.add("Book")
+        list_title.add("Car")
+        list_title.add("Switch")
+        list_title.add("PS4")
+        list_title.add("XBox")
+        viewPagerAdapter = ViewPagerAdapter(childFragmentManager, list_fragment, list_title)
+        viewPager = view.findViewById(R.id.pager)
+        viewPager.adapter = viewPagerAdapter
 
-        // Create a new Fragment to be placed in the activity layout
-        val firstFragment = SliderFragment.newInstance("1", "2")
-        val secondFragment = ItemsRecyclerFragment.newInstance("1", "2")
-
-        val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container_, firstFragment)
-        transaction.replace(R.id.fragment_container_2, secondFragment).commit()
-
+        val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
+        tabLayout.setupWithViewPager(viewPager)
+//        // Create a new Fragment to be placed in the activity layout
+//        val itemsFragment = BuyRecyclerFragment.newInstance("1", "2")
+//
+//        val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
+//        transaction.replace(R.id.fragment_buy_container, itemsFragment).commit()
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

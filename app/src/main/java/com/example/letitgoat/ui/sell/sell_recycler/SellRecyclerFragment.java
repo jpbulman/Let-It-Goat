@@ -1,4 +1,4 @@
-package com.example.letitgoat.ui.home.items_recycler;
+package com.example.letitgoat.ui.sell.sell_recycler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.letitgoat.ItemActivity;
 import com.example.letitgoat.R;
@@ -22,19 +21,19 @@ import com.example.letitgoat.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ItemsRecyclerFragment.OnFragmentInteractionListener} interface
+ * {@link SellRecyclerFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ItemsRecyclerFragment#newInstance} factory method to
+ * Use the {@link SellRecyclerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.ItemClickListener {
+public class SellRecyclerFragment extends Fragment implements SellViewAdapter.ItemClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private RecyclerView recyclerView;
-    private ItemsViewAdapter mAdapter;
+    private SellViewAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
     // TODO: Rename and change types of parameters
@@ -43,7 +42,7 @@ public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.
 
     private OnFragmentInteractionListener mListener;
 
-    public ItemsRecyclerFragment() {
+    public SellRecyclerFragment() {
         // Required empty public constructor
     }
 
@@ -53,11 +52,11 @@ public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ItemsRecyclerFragment.
+     * @return A new instance of fragment SellRecyclerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ItemsRecyclerFragment newInstance(String param1, String param2) {
-        ItemsRecyclerFragment fragment = new ItemsRecyclerFragment();
+    public static SellRecyclerFragment newInstance(String param1, String param2) {
+        SellRecyclerFragment fragment = new SellRecyclerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -78,14 +77,14 @@ public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_items_recycle, container, false);
+        return inflater.inflate(R.layout.fragment_sell_recycler, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = getView().findViewById(R.id.item_recyclerview);
+        recyclerView = getView().findViewById(R.id.sell_recyclerview);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -95,13 +94,11 @@ public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new ItemsViewAdapter();
+        mAdapter = new SellViewAdapter(getContext());
         mAdapter.setClickListener(this);
         recyclerView.setAdapter(mAdapter);
 
     }
-
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -145,7 +142,7 @@ public class ItemsRecyclerFragment extends Fragment implements ItemsViewAdapter.
     @Override
     public void onItemClick(View view, int position) {
 //        mAdapter.getItem(position);
-        Log.d("ItemsFragment", position+"");
+        Log.d("SellItemsFragment", position+"");
         Intent intent = new Intent(getContext(), ItemActivity.class);
         startActivity(intent);
 //        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();

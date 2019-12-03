@@ -60,7 +60,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             postedTimeStamp = currTime
         )
 
-        //Adds single_item to db
+        //Adds single_buy to db
         if (validInput) {
             database.collection("Items").add(item)
             startActivity(Intent(this, Home::class.java))
