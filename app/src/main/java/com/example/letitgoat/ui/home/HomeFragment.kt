@@ -1,5 +1,6 @@
 package com.example.letitgoat.ui.home
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -7,6 +8,7 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
 import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
 import com.google.android.material.tabs.TabLayout
@@ -38,10 +40,6 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 
         setHasOptionsMenu(true)
 
-//        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
-//        newItemButton.setOnClickListener {
-//            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
-//        }
 
         return root
     }
@@ -68,11 +66,6 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         tabLayout.setupWithViewPager(viewPager)
-//        // Create a new Fragment to be placed in the activity layout
-//        val itemsFragment = BuyRecyclerFragment.newInstance("1", "2")
-//
-//        val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
-//        transaction.replace(R.id.fragment_buy_container, itemsFragment).commit()
     }
 
 
@@ -86,6 +79,15 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
         }
         menu.findItem(R.id.search)?.isVisible = true
         activity?.invalidateOptionsMenu()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_submit -> {
+            // do stuff
+            this.startActivity(Intent(activity, AddingItemToMarketplace::class.java))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onFragmentInteraction(uri: Uri?) {

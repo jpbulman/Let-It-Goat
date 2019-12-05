@@ -7,11 +7,15 @@
         app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView" />
 
-    <item android:id="@+id/text"
-        app:showAsAction="always"
-        android:title="" />
+<!--    <item-->
+<!--        android:id="@+id/text"-->
+<!--        android:title=""-->
+<!--        android:visible="false"-->
+<!--        app:showAsAction="always" />-->
+
     <item
         android:id="@+id/action_submit"
-        app:showAsAction="always"
-        android:title="" />
+        android:icon="@android:drawable/ic_menu_add"
+        android:title=""
+        app:showAsAction="always" />
 </menu>
