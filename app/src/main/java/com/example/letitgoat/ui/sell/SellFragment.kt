@@ -29,10 +29,10 @@ class SellFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_sell, container, false)
         setHasOptionsMenu(true)
 
-        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
-        newItemButton.setOnClickListener {
-            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
-        }
+//        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
+//        newItemButton.setOnClickListener {
+//            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
+//        }
 
         return root
     }
