@@ -30,7 +30,7 @@ public class TmpMainActivity extends AppCompatActivity
 
             // Create a new Fragment to be placed in the activity layout
             SliderFragment firstFragment = SliderFragment.newInstance("1", "2");
-            BuyRecyclerFragment secondFragment = BuyRecyclerFragment.newInstance("1", "2");
+            BuyRecyclerFragment secondFragment = BuyRecyclerFragment.newInstance("1");
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments

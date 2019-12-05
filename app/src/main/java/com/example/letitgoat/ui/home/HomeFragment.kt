@@ -46,13 +46,7 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val list_fragment: ArrayList<Fragment> = ArrayList()
-        list_fragment.add(BuyRecyclerFragment())
-        list_fragment.add(BuyRecyclerFragment())
-        list_fragment.add(BuyRecyclerFragment())
-        list_fragment.add(BuyRecyclerFragment())
-        list_fragment.add(BuyRecyclerFragment())
-        list_fragment.add(BuyRecyclerFragment())
+
         val list_title: ArrayList<String> = ArrayList()
         list_title.add("All")
         list_title.add("Book")
@@ -60,7 +54,7 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
         list_title.add("Switch")
         list_title.add("PS4")
         list_title.add("XBox")
-        viewPagerAdapter = ViewPagerAdapter(childFragmentManager, list_fragment, list_title)
+        viewPagerAdapter = ViewPagerAdapter(childFragmentManager, list_title)
         viewPager = view.findViewById(R.id.pager)
         viewPager.adapter = viewPagerAdapter
 

@@ -7,28 +7,28 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment;
+
 import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    private List<Fragment> fragmentList;
     private List<String> titleList;
 
-    public ViewPagerAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> titleList) {
+    public ViewPagerAdapter(FragmentManager fm, List<String> titleList) {
         super(fm);
-        this.fragmentList = fragmentList;
         this.titleList = titleList;
     }
 
     @Override
     public int getCount() {
-        return fragmentList.size();
+        return titleList.size();
     }
 
     @Override
     public Fragment getItem(int position) {
-        return fragmentList.get(position);
+        return BuyRecyclerFragment.newInstance(titleList.get(position));
     }
 
     @Override
