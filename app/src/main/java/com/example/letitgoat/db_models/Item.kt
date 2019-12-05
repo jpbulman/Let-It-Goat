@@ -1,4 +1,4 @@
-package com.example.letitgoat.ui.db_models
+package com.example.letitgoat.db_models
 
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
@@ -7,9 +7,10 @@ import java.util.*
 
 @IgnoreExtraProperties
 data class Item(
-    val name: String?,
-    val price: Double?,
-    val user: User?,
+    val name: String,
+    val price: Double,
+    val user: User,
     val description: String,
-    val postedTimeStamp: Date?
+    val postedTimeStamp: Date,
+    val stringsOfBitmapofPicuresOfItem: List<String>
 )

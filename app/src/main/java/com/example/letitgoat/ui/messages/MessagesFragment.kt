@@ -23,10 +23,6 @@ class MessagesFragment : Fragment() {
         messagesViewModel =
             ViewModelProviders.of(this).get(MessagesViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_messages, container, false)
-        val textView: TextView = root.findViewById(R.id.text_messages)
-        messagesViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
         setHasOptionsMenu(true)
         return root
     }
@@ -35,12 +31,12 @@ class MessagesFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
             isIconifiedByDefault = true
             queryHint = "settings?"
         }
 
-        menu?.findItem(R.id.search)?.isVisible = false
+        menu.findItem(R.id.search)?.isVisible = false
         activity?.invalidateOptionsMenu()
     }
 }

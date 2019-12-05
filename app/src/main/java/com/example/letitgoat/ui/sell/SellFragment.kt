@@ -1,11 +1,14 @@
 package com.example.letitgoat.ui.sell
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
+import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
 import com.example.letitgoat.ui.sell.sell_recycler.SellRecyclerFragment
 
@@ -25,6 +28,12 @@ class SellFragment : Fragment() {
             ViewModelProviders.of(this).get(SellViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_sell, container, false)
         setHasOptionsMenu(true)
+
+        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
+        newItemButton.setOnClickListener {
+            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
+        }
+
         return root
     }
 
@@ -43,7 +52,7 @@ class SellFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
             isIconifiedByDefault = true
 //            queryHint = "search from history"
         }

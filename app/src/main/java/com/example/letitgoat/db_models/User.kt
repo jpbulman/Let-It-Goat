@@ -1,4 +1,4 @@
-package com.example.letitgoat.ui.db_models
+package com.example.letitgoat.db_models
 
 import com.google.firebase.database.IgnoreExtraProperties
 
@@ -6,6 +6,8 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class User(
-    val email: String?,
-    val name: String?
+    val email: String,
+    val name: String,
+    //String of bitmap for the picture
+    val profilePicture: String
 )
