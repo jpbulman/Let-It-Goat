@@ -69,7 +69,7 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
         this.menu = menu
 
         (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
-            isIconifiedByDefault = false
+            isIconifiedByDefault = true
         }
         menu.findItem(R.id.search)?.isVisible = true
         activity?.invalidateOptionsMenu()

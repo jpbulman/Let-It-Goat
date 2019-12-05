@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import org.jetbrains.anko.doAsync
 import android.graphics.Bitmap
 import android.util.Base64
+import android.view.View
 import java.io.ByteArrayOutputStream
 
 
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     fun login(){
         val unameField = findViewById<EditText>(R.id.usernameField)
         val pwdField = findViewById<EditText>(R.id.passwordField)
+        
         doAsync{
             val username = unameField.text.toString()
 
