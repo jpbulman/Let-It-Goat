@@ -127,7 +127,7 @@
 <!--            android:background="#5cb85c"-->
 <!--            android:layout_marginStart="5dp"-->
 <!--            android:layout_height="match_parent"-->
-<!--            android:text="Buy item 💲"-->
+<!--            android:text="Buy single_buy 💲"-->
 <!--            android:textColor="@color/colorAccent"-->
 <!--            android:layout_weight="47.5"/>-->
 
