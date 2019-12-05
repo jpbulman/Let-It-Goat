@@ -104,6 +104,7 @@ class SettingsFragment : Fragment() {
             queryHint = "settings?"
         }
         menu.findItem(R.id.search)?.isVisible = false
+        menu.findItem(R.id.action_submit)?.isVisible = false
         activity?.invalidateOptionsMenu()
     }
 }

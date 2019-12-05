@@ -29,11 +29,6 @@ class SellFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_sell, container, false)
         setHasOptionsMenu(true)
 
-//        val newItemButton = root.findViewById<Button>(R.id.addNewItemButton)
-//        newItemButton.setOnClickListener {
-//            startActivity(Intent(activity, AddingItemToMarketplace::class.java))
-//        }
-
         return root
     }
 
@@ -52,12 +47,19 @@ class SellFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
-            isIconifiedByDefault = true
-//            queryHint = "search from history"
+        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+            isIconifiedByDefault = false
         }
-
         menu.findItem(R.id.search)?.isVisible = true
         activity?.invalidateOptionsMenu()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_submit -> {
+            // do stuff
+            this.startActivity(Intent(activity, AddingItemToMarketplace::class.java))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }
