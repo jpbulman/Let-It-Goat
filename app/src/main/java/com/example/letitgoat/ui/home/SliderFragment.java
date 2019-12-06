@@ -94,10 +94,10 @@ public class SliderFragment extends Fragment implements BaseSliderView.OnSliderC
         url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
 
         HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
-        file_maps.put("Hannibal",R.drawable.wpi);
-        file_maps.put("Big Bang Theory",R.drawable.wpi);
-        file_maps.put("House of Cards",R.drawable.wpi);
-        file_maps.put("Game of Thrones", R.drawable.wpi);
+        file_maps.put("Hannibal", R.drawable.foo);
+        file_maps.put("Big Bang Theory", R.drawable.foo);
+        file_maps.put("House of Cards", R.drawable.foo);
+        file_maps.put("Game of Thrones", R.drawable.foo);
 
         for(String name : file_maps.keySet()){
             TextSliderView textSliderView = new TextSliderView(getContext());
