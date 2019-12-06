@@ -25,7 +25,7 @@ class ItemActivity : AppCompatActivity() {
         val description = findViewById<TextView>(R.id.single_item_description)
 
         name.setText(item.name)
-        price.setText(item.price.toString())
+        price.setText("$" + item.price.toString())
         description.setText(item.description)
 
         val encodeByte: ByteArray = Base64.decode(

@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.letitgoat.AddingItemToMarketplace;
 import com.example.letitgoat.ItemActivity;
 import com.example.letitgoat.R;
 import com.example.letitgoat.db_models.Item;
@@ -144,7 +145,7 @@ public class SellRecyclerFragment extends Fragment implements SellViewAdapter.It
     public void onItemClick(View view, int position, Item item) {
 //        mAdapter.getItem(position);
         Log.d("SellItemsFragment", item.getName());
-        Intent intent = new Intent(getContext(), ItemActivity.class);
+        Intent intent = new Intent(getContext(), AddingItemToMarketplace.class);
         intent.putExtra("extra_item", item);
         startActivity(intent);
 //        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();

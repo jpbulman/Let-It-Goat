@@ -3,11 +3,14 @@ package com.example.letitgoat
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.widget.*
 import com.example.letitgoat.db_models.Item
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,6 +29,49 @@ class AddingItemToMarketplace : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding_item_to_marketplace)
+
+        Log.d("check_add_item", (intent.getSerializableExtra("extra_item")==null).toString())
+
+        if (intent.getSerializableExtra("extra_item")!=null) {
+            val item = intent.getSerializableExtra("extra_item") as Item
+            Log.d("ItemActivity", item.name)
+
+            val img = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
+            val name = findViewById<TextView>(R.id.itemNameField)
+            val price = findViewById<TextView>(R.id.priceField)
+            val description = findViewById<TextView>(R.id.descriptionField)
+
+            name.setText(item.name)
+            price.setText(item.price.toString())
+            description.setText(item.description)
+
+            val encodeByte: ByteArray = Base64.decode(
+                item.stringsOfBitmapofPicuresOfItem.get(0),
+                Base64.DEFAULT
+            )
+            val b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+
+            val matrix = Matrix()
+
+            matrix.postRotate(90f)
+
+            val scaledBitmap = Bitmap.createScaledBitmap(b, b.width, b.height, true)
+
+            val rotatedBitmap = Bitmap.createBitmap(
+                scaledBitmap,
+                0,
+                0,
+                scaledBitmap.width,
+                scaledBitmap.height,
+                matrix,
+                true
+            )
+
+            img.setImageBitmap(
+                rotatedBitmap
+            )
+        }
+
 
         database = FirebaseFirestore.getInstance()
 

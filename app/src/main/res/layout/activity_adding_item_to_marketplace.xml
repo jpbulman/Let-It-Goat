@@ -1,144 +1,114 @@
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorAccent"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <!--    <HorizontalScrollView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="match_parent">-->
-
-    <!--        <ImageView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:src="@drawable/wpi"/>-->
-
-    <!--        <ImageView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:src="@drawable/ic_gear"/>-->
-
-    <!--    </HorizontalScrollView>-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/wpi"
-                android:id="@+id/itemAboutToBeSoldPicture" />
+                android:id="@+id/itemAboutToBeSoldPicture"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:src="@drawable/wpi" />
 
             <ImageButton
                 android:id="@+id/newItemPictureButton"
                 android:layout_width="75dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icons8_camera_24"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:src="@drawable/icons8_camera_24" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textCursorDrawable="@null"
-                android:id="@+id/itemNameField"
-                android:hint="Item name" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="15sp"
-                android:id="@+id/sellerName"
-                android:text="Being sold by: JP Bulman"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:text="@string/dollarsign" />
+                android:orientation="vertical">
 
                 <EditText
-                    android:paddingTop="50dp"
-                    android:id="@+id/priceField"
-                    android:textColor="#000000"
-                    android:textCursorDrawable="@null"
-                    android:inputType="numberDecimal"
+                    android:id="@+id/itemNameField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/_100_00" />
+                    android:gravity="center"
+                    android:hint="Item name"
+                    android:textColor="#000000"
+                    android:textCursorDrawable="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:id="@+id/sellerName"
+                    android:text="Being sold by: JP Bulman"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dollarsign"
+                        android:textColor="#000000" />
+
+                    <EditText
+                        android:id="@+id/priceField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="@string/_100_00"
+                        android:inputType="numberDecimal"
+                        android:paddingTop="50dp"
+                        android:textColor="#000000"
+                        android:textCursorDrawable="@null" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/descriptionField"
+            style="@style/Widget.AppCompat.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Description of your product"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp"
+            android:textColor="#000000"
+            android:textCursorDrawable="@null" />
+
+
+        <Button
+            android:id="@+id/addToMarketPlaceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="Put item on WPI marketplace" />
     </LinearLayout>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:textCursorDrawable="@null"
-        android:id="@+id/descriptionField"
-        android:hint="Description of your product"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:orientation="horizontal">
-
-<!--        <Button-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:background="#007bff"-->
-<!--            android:layout_marginEnd="5dp"-->
-<!--            android:text="Message seller 💬"-->
-<!--            android:textColor="@color/colorAccent"-->
-<!--            android:layout_weight="47.5" />-->
-
-<!--        <Button-->
-<!--            android:layout_width="0dp"-->
-<!--            android:background="#5cb85c"-->
-<!--            android:layout_marginStart="5dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Buy single_buy 💲"-->
-<!--            android:textColor="@color/colorAccent"-->
-<!--            android:layout_weight="47.5"/>-->
-
-    </LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp"
-        android:id="@+id/addToMarketPlaceButton"
-        android:text="Put item on WPI marketplace" />
-
-</LinearLayout>
+</ScrollView>
