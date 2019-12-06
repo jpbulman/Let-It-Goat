@@ -25,8 +25,9 @@
         android:layout_height="wrap_content" android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/single_item_img"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
             android:src="@drawable/wpi" />
 
         <LinearLayout
@@ -35,12 +36,13 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/single_item_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
                 android:gravity="center"
-                android:textSize="30sp"
-                android:text="@string/wpi_s_quad_seal"/>
+                android:text="@string/wpi_s_quad_seal"
+                android:textColor="@color/colorAccent"
+                android:textSize="30sp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -51,26 +53,28 @@
                 android:text="Being sold by: JP Bulman"/>
 
             <TextView
+                android:id="@+id/single_item_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
                 android:gravity="center"
-                android:textSize="30sp"
                 android:paddingTop="30dp"
-                android:text="$100.20"/>
+                android:text="$100.20"
+                android:textColor="@color/colorAccent"
+                android:textSize="30sp" />
 
         </LinearLayout>
 
     </LinearLayout>
 
     <TextView
+        android:id="@+id/single_item_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
         android:paddingStart="20sp"
         android:paddingTop="20sp"
         android:paddingBottom="20sp"
-        android:text="@string/df"/>
+        android:text="@string/df"
+        android:textColor="@color/colorAccent" />
 
     <LinearLayout
         android:layout_width="match_parent"

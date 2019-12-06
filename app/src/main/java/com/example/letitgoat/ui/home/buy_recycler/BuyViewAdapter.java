@@ -18,6 +18,8 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.example.letitgoat.R;
+import com.example.letitgoat.db_models.Item;
+import com.example.letitgoat.db_models.User;
 
 import java.util.HashMap;
 

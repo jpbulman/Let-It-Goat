@@ -93,7 +93,9 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(view,
+                    getAdapterPosition(),
+                    usersItemsOnMarket.get(getAdapterPosition()));
         }
     }
 
@@ -150,6 +152,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, Item item);
     }
 }

@@ -132,10 +132,8 @@ public class BuyRecyclerFragment extends Fragment implements BuyViewAdapter.Item
 
     @Override
     public void onItemClick(View view, int position) {
-//        mAdapter.getItem(position);
         Log.d("ItemsFragment", position+"");
         Intent intent = new Intent(getContext(), ItemActivity.class);
         startActivity(intent);
-//        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();
     }
 }

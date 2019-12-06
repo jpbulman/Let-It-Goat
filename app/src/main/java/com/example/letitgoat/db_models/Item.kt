@@ -1,6 +1,7 @@
 package com.example.letitgoat.db_models
 
 import com.google.firebase.database.IgnoreExtraProperties
+import java.io.Serializable
 import java.util.*
 
 //THIS IS A DB MODEL CLASS - Try and only use it for DB reading and writing
@@ -13,4 +14,4 @@ data class Item(
     val description: String,
     val postedTimeStamp: Date,
     val stringsOfBitmapofPicuresOfItem: List<String>
-)
+) : Serializable

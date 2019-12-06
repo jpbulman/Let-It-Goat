@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.example.letitgoat.ItemActivity;
 import com.example.letitgoat.R;
+import com.example.letitgoat.db_models.Item;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -140,10 +141,11 @@ public class SellRecyclerFragment extends Fragment implements SellViewAdapter.It
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position, Item item) {
 //        mAdapter.getItem(position);
-        Log.d("SellItemsFragment", position+"");
+        Log.d("SellItemsFragment", item.getName());
         Intent intent = new Intent(getContext(), ItemActivity.class);
+        intent.putExtra("extra_item", item);
         startActivity(intent);
 //        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();
     }
