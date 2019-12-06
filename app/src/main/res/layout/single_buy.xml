@@ -29,12 +29,16 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#292b2c"
+            android:textSize="20sp"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#292b2c"
+            android:textSize="17sp"
             android:text="TextView" />
 
         <TextView
@@ -42,5 +46,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />
+        
     </LinearLayout>
 </LinearLayout>

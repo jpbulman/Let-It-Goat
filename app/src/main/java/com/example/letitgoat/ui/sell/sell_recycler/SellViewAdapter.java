@@ -121,6 +121,12 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Item i = this.usersItemsOnMarket.get(position);
         ((ItemsViewHolder)holder).name.setText(i.getName());
         ((ItemsViewHolder)holder).price.setText("$" + i.getPrice());
+
+        //Extra zero if the price doesn't have one
+        if(((ItemsViewHolder)holder).price.getText().toString().split("\\.")[1].length() == 1){
+            ((ItemsViewHolder)holder).price.setText("$" + i.getPrice() + "0");
+        }
+
         ((ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
 
         byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);

@@ -68,10 +68,9 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
 
             HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
-            file_maps.put("Hannibal",R.drawable.wpi);
-            file_maps.put("Big Bang Theory",R.drawable.wpi);
-            file_maps.put("House of Cards",R.drawable.wpi);
-            file_maps.put("Game of Thrones", R.drawable.wpi);
+            file_maps.put("Nintendo Switch", R.drawable.foo);
+            file_maps.put("Couch", R.drawable.couch);
+            file_maps.put("CC meal swipe", R.drawable.cc);
 
             for(String name : file_maps.keySet()){
                 TextSliderView textSliderView = new TextSliderView(mContext);
