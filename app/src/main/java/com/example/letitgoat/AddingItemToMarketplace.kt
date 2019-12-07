@@ -1,9 +1,11 @@
 package com.example.letitgoat
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -16,12 +18,26 @@ import java.io.ByteArrayOutputStream
 import java.lang.NumberFormatException
 import java.util.*
 import kotlin.collections.ArrayList
+import android.location.Location
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Looper
+import android.provider.Settings
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.*
 
 
 class AddingItemToMarketplace : AppCompatActivity() {
 
     private lateinit var database: FirebaseFirestore
     private var stringsOfBitmapsOfItems: List<String> = ArrayList()
+
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +56,96 @@ class AddingItemToMarketplace : AppCompatActivity() {
         val takePhotoButton = findViewById<ImageButton>(R.id.newItemPictureButton)
         takePhotoButton.setOnClickListener{
             dispatchTakePictureIntent()
+        }
+
+        val library : Location = Location("")
+        library.latitude = 42.2742
+        library.longitude = 71.8065
+
+        val kaven : Location = Location("")
+        kaven.latitude = 42.2749
+        kaven.longitude = 71.8059
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        findViewById<Button>(R.id.fab).setOnClickListener{getLastLocation()}
+    }
+
+    val PERMISSION_ID = 42
+
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return true
+        }
+        return false
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_ID
+        )
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == PERMISSION_ID) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Granted. Start getting the location information
+            }
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val mLastLocation: Location = locationResult.lastLocation
+            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
+            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
+        }
+    }
+
+    private fun requestNewLocationData() {
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 0
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationClient.requestLocationUpdates(
+            mLocationRequest, mLocationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private fun getLastLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+
+                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
+                    var location: Location? = task.result
+                    if (location == null) {
+                        requestNewLocationData()
+                    } else {
+                        findViewById<TextView>(R.id.latTextView).text = location.latitude.toString()
+                        findViewById<TextView>(R.id.lonTextView).text = location.longitude.toString()
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        } else {
+            requestPermissions()
         }
     }
 
