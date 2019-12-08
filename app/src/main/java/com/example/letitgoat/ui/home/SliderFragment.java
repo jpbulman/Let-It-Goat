@@ -9,11 +9,8 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
@@ -81,7 +78,7 @@ public class SliderFragment extends Fragment implements BaseSliderView.OnSliderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_slider, container, false);
+        return inflater.inflate(R.layout.slider, container, false);
     }
 
     @Override
@@ -97,10 +94,10 @@ public class SliderFragment extends Fragment implements BaseSliderView.OnSliderC
         url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
 
         HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
-        file_maps.put("Hannibal",R.drawable.wpi);
-        file_maps.put("Big Bang Theory",R.drawable.wpi);
-        file_maps.put("House of Cards",R.drawable.wpi);
-        file_maps.put("Game of Thrones", R.drawable.wpi);
+        file_maps.put("Hannibal", R.drawable.foo);
+        file_maps.put("Big Bang Theory", R.drawable.foo);
+        file_maps.put("House of Cards", R.drawable.foo);
+        file_maps.put("Game of Thrones", R.drawable.foo);
 
         for(String name : file_maps.keySet()){
             TextSliderView textSliderView = new TextSliderView(getContext());
@@ -158,12 +155,12 @@ public class SliderFragment extends Fragment implements BaseSliderView.OnSliderC
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override

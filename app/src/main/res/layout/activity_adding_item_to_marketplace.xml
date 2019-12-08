@@ -1,34 +1,42 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <!--    <HorizontalScrollView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="match_parent">-->
-
-    <!--        <ImageView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:src="@drawable/wpi"/>-->
-
-    <!--        <ImageView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:src="@drawable/ic_gear"/>-->
-
-    <!--    </HorizontalScrollView>-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/wpi" />
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="240dp"
+                android:maxHeight="240dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/texthere"
+                android:id="@+id/itemAboutToBeSoldPicture" />
+
+            <ImageButton
+                android:id="@+id/newItemPictureButton"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:background="#292b2c"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:src="@drawable/white"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,16 +46,19 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
+                android:textColor="#000000"
+                android:textCursorDrawable="@null"
                 android:id="@+id/itemNameField"
+                android:layout_marginEnd="10dp"
                 android:hint="Item name" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
+                android:textColor="#000000"
                 android:gravity="center"
                 android:textSize="15sp"
+                android:layout_marginEnd="10dp"
                 android:id="@+id/sellerName"
                 android:text="Being sold by: JP Bulman"/>
 
@@ -59,16 +70,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="#000000"
                     android:text="@string/dollarsign" />
 
                 <EditText
                     android:paddingTop="50dp"
                     android:id="@+id/priceField"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="#000000"
+                    android:textCursorDrawable="@null"
                     android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
                     android:hint="@string/_100_00" />
 
             </LinearLayout>
@@ -80,13 +93,16 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
+        android:textColor="#000000"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
+        android:textCursorDrawable="@null"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:id="@+id/descriptionField"
-        android:hint="Description of your product"/>
+        android:hint="@string/description_of_your_product"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -95,32 +111,35 @@
         android:paddingEnd="20dp"
         android:orientation="horizontal">
 
-<!--        <Button-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:background="#007bff"-->
-<!--            android:layout_marginEnd="5dp"-->
-<!--            android:text="Message seller 💬"-->
-<!--            android:textColor="@color/colorAccent"-->
-<!--            android:layout_weight="47.5" />-->
-
-<!--        <Button-->
-<!--            android:layout_width="0dp"-->
-<!--            android:background="#5cb85c"-->
-<!--            android:layout_marginStart="5dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Buy item 💲"-->
-<!--            android:textColor="@color/colorAccent"-->
-<!--            android:layout_weight="47.5"/>-->
-
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup location:"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:textColor="#868e96" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+        android:id="@+id/pickupLocationSpinner" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
+        android:textColor="@color/colorAccent"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:background="#0275d8"
         android:id="@+id/addToMarketPlaceButton"
-        android:text="Put item on WPI marketplace" />
+        android:text="@string/put_item_on_wpi_marketplace" />
 
 </LinearLayout>

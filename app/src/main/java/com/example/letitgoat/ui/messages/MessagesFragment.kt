@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
 
 class MessagesFragment : Fragment() {
@@ -49,12 +50,14 @@ class MessagesFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         this.menu = menu
 
-        (menu?.findItem(R.id.search)?.actionView as SearchView).apply {
+        (menu.findItem(R.id.search)?.actionView as SearchView).apply {
             isIconifiedByDefault = true
             queryHint = "settings?"
         }
 
-        menu?.findItem(R.id.search)?.isVisible = false
+        menu.findItem(R.id.search)?.isVisible = false
+        menu.findItem(R.id.action_submit)?.isVisible = false
         activity?.invalidateOptionsMenu()
     }
+
 }

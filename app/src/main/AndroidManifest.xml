@@ -5,6 +5,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -14,11 +17,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <activity android:name=".ItemActivity"></activity>
+        <activity android:name=".TmpMainActivity">
+        </activity>
+        <activity android:name=".AddingItemToMarketplace"></activity>
         <activity android:name=".ui.messages.ComposeMessageActivity"></activity>
-        <activity android:name=".ItemActivity" />
-        <activity android:name=".TmpMainActivity"></activity>
-        <activity android:name=".AddingItemToMarketplace" />
-        <activity android:name=".ItemOnMarket" />
+        <activity android:name=".ItemOnMarket"></activity>
         <activity
             android:name=".Home"
             android:label="Home">
@@ -36,10 +51,10 @@
             android:name=".MainActivity"
             android:label="@string/app_name">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+<!--             <intent-filter>-->
+<!--             <action android:name="android.intent.action.MAIN" />-->
+<!--             <category android:name="android.intent.category.LAUNCHER" />-->
+<!--             </intent-filter>-->
         </activity>
         <activity android:name=".SearchResultsActivity">
             <intent-filter>

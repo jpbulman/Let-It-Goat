@@ -15,4 +15,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dollarsign">$</string>
     <string name="_100_00">100.00</string>
+    <string name="put_item_on_wpi_marketplace">Put item on market</string>
+    <string name="description_of_your_product">Description of your product</string>
+    <string name="api_key">AIzaSyAL-DHp14Ohsia7W6vqSzmZ3CNrtfNQeB0</string>
 </resources>
