@@ -58,13 +58,14 @@ class AddingItemToMarketplace : AppCompatActivity() {
             dispatchTakePictureIntent()
         }
 
-        val library : Location = Location("")
-        library.latitude = 42.2742
-        library.longitude = 71.8065
-
-        val kaven : Location = Location("")
-        kaven.latitude = 42.2749
-        kaven.longitude = 71.8059
+        val locationHelper = WPILocationHelper()
+        val spinner = findViewById<Spinner>(R.id.pickupLocationSpinner)
+        val locationSpinnerAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            locationHelper.listOfLocationAsStrings
+        )
+        spinner.adapter = locationSpinnerAdapter
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -107,8 +108,8 @@ class AddingItemToMarketplace : AppCompatActivity() {
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val mLastLocation: Location = locationResult.lastLocation
-            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
+//            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
+//            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
         }
     }
 
@@ -131,12 +132,12 @@ class AddingItemToMarketplace : AppCompatActivity() {
             if (isLocationEnabled()) {
 
                 mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-                    var location: Location? = task.result
+                    val location: Location? = task.result
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-                        findViewById<TextView>(R.id.latTextView).text = location.latitude.toString()
-                        findViewById<TextView>(R.id.lonTextView).text = location.longitude.toString()
+                        val lat : Double = location.latitude
+                        val long : Double = location.longitude
                     }
                 }
             } else {

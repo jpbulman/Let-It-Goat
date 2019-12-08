@@ -116,14 +116,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Location stuff"
-        android:id="@+id/latTextView" />
+        android:text="Pickup location:"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:textColor="#868e96" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Spinner
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Location stuff"
-        android:id="@+id/lonTextView" />
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+        android:id="@+id/pickupLocationSpinner" />
 
     <Button
         android:layout_width="wrap_content"
@@ -134,7 +139,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
         android:textColor="@color/colorAccent"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
