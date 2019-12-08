@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.letitgoat.ItemActivity;
 import com.example.letitgoat.R;
+import com.example.letitgoat.db_models.Item;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -131,9 +132,10 @@ public class BuyRecyclerFragment extends Fragment implements BuyViewAdapter.Item
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position, Item item) {
         Log.d("ItemsFragment", position+"");
         Intent intent = new Intent(getContext(), ItemActivity.class);
+        intent.putExtra("extra_item", item);
         startActivity(intent);
     }
 }
