@@ -1,11 +1,10 @@
 package com.example.letitgoat.ui.messages
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.SearchView
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.letitgoat.R
 
@@ -23,10 +22,25 @@ class MessagesFragment : Fragment() {
         messagesViewModel =
             ViewModelProviders.of(this).get(MessagesViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_messages, container, false)
-        val textView: TextView = root.findViewById(R.id.text_messages)
-        messagesViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
+        val chatList = root.findViewById<ListView>(R.id.chatList)
+        val chatArray = arrayListOf("eagu@wpi.edu", "rjwalls@wpi.edu")
+        val currContext = context
+        if (currContext == null) {
+            return root
+        } else {
+            val chatListAdapter =
+                ArrayAdapter<String>(currContext, R.layout.conversation_layout, chatArray)
+            chatList.adapter = chatListAdapter
+
+            chatList.setOnItemClickListener {_, _, position, _ ->
+                val intent = Intent(currContext, ComposeMessageActivity::class.java)
+                intent.putExtra("username", chatArray.get(position))
+                startActivity(intent)
+            }
+        }
+
+
+
         setHasOptionsMenu(true)
         return root
     }

@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     //Static user object - just whoever logs into the app
     //Can be referenced anywhere in the app after the user logs in to see who is logged in
     companion object {
-        var user: User? = null
+        var user: User? = User(email="dev@wpi.edu", name="Mr. Dev")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
