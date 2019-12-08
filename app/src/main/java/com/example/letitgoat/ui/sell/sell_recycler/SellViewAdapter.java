@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import androidx.annotation.NonNull;
@@ -55,13 +57,19 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
                                 System.out.println(doc.get("postedTimeStamp").toString());
                                 Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
+                                Location l = (Location) doc.get("pickupLocation");
+                                WPILocationHelper wpiLocationHelper = new WPILocationHelper();
+                                if(l == null){
+                                    l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                }
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
                                         u,
                                         doc.get("description").toString(),
                                         d,
-                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem")
+                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem"),
+                                        l
                                 );
                                 usersItemsOnMarket.add(i);
                                 notifyDataSetChanged();

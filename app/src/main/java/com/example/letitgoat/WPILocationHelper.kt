@@ -9,6 +9,11 @@ class WPILocationHelper {
         "Alden Hall"
     )
 
+    val locationNameToLocationObjectMap = mapOf<String, Location>(
+        "Gordon Library" to getLocationOfGordonLibrary(),
+        "Alden Hall" to getLocationOfAldenHall()
+    )
+
     fun getLocationOfGordonLibrary() : Location{
         val library = Location("")
         library.latitude = 42.2742

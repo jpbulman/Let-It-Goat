@@ -30,6 +30,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
+import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
 
 
 class AddingItemToMarketplace : AppCompatActivity() {
@@ -198,13 +199,22 @@ class AddingItemToMarketplace : AppCompatActivity() {
             validInput = false
         }
 
+        println(pickupLocationSpinner.selectedItem.toString())
+
+        val wpiLocationHelper = WPILocationHelper()
+        var pickupLocation = wpiLocationHelper.locationNameToLocationObjectMap[pickupLocationSpinner.selectedItem.toString()]
+        if(pickupLocation == null){
+            pickupLocation = wpiLocationHelper.getLocationOfGordonLibrary()
+        }
+
         val item = Item(
             name = name,
             price = price,
             user = user,
             description = description,
             postedTimeStamp = currTime,
-            stringsOfBitmapofPicuresOfItem = this.stringsOfBitmapsOfItems
+            stringsOfBitmapofPicuresOfItem = this.stringsOfBitmapsOfItems,
+            pickupLocation = pickupLocation
         )
 
         //Adds single_buy to db

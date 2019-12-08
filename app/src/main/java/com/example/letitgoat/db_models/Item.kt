@@ -1,5 +1,6 @@
 package com.example.letitgoat.db_models
 
+import android.location.Location
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
 
@@ -12,5 +13,6 @@ data class Item(
     val user: User,
     val description: String,
     val postedTimeStamp: Date,
-    val stringsOfBitmapofPicuresOfItem: List<String>
+    val stringsOfBitmapofPicuresOfItem: List<String>,
+    val pickupLocation: Location
 )
