@@ -1,19 +1,34 @@
 package com.example.letitgoat.ui.sell.sell_recycler;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.letitgoat.AddingItemToMarketplace;
+import com.example.letitgoat.SingleShotLocationProvider;
+import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.User;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.letitgoat.MainActivity;
@@ -25,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +54,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private FirebaseFirestore db;
 
     SellViewAdapter(Context context) {
-        this.mContext = mContext;
+        this.mContext = context;
         this.db = FirebaseFirestore.getInstance();
         this.usersItemsOnMarket = new ArrayList<>();
 
@@ -48,20 +64,25 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document : task.getResult()){
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
-                                System.out.println(doc.get("postedTimeStamp").toString());
-                                Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
+                                Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
+                                Location l = (Location) doc.get("pickupLocation");
+                                WPILocationHelper wpiLocationHelper = new WPILocationHelper();
+                                if (l == null) {
+                                    l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                }
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
                                         u,
                                         doc.get("description").toString(),
                                         d,
-                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem")
+                                        (List<String>) doc.get("stringsOfBitmapofPicuresOfItem"),
+                                        l
                                 );
                                 usersItemsOnMarket.add(i);
                                 notifyDataSetChanged();
@@ -81,6 +102,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private TextView name;
         private TextView price;
         private TextView date;
+        private TextView pickupLocation;
 
         ItemsViewHolder(View v) {
             super(v);
@@ -88,6 +110,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             name = v.findViewById(R.id.name);
             price = v.findViewById(R.id.price);
             date = v.findViewById(R.id.date);
+            pickupLocation = v.findViewById(R.id.location);
             v.setOnClickListener(this);
         }
 
@@ -117,10 +140,29 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Item i = this.usersItemsOnMarket.get(position);
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
+        final Item i = this.usersItemsOnMarket.get(position);
         ((ItemsViewHolder)holder).name.setText(i.getName());
         ((ItemsViewHolder)holder).price.setText("$" + i.getPrice());
+
+        final Location[] l = {null};
+        SingleShotLocationProvider.requestSingleUpdate(
+                mContext,
+                new SingleShotLocationProvider.LocationCallback() {
+                    @Override public void onNewLocationAvailable(Location location) {
+                        Log.d("Location", "my location is " + location.getLatitude() + "  " + location.getLongitude());
+
+                        DecimalFormat df = new DecimalFormat("###.##");
+
+                        System.out.println(i.getPickupLocation().getLatitude() + " " + i.getPickupLocation().getLongitude());
+                        ((ItemsViewHolder)holder).pickupLocation.setText(
+                                i.getPickupLocation().getProvider() + ": " +
+                                        df.format(location.distanceTo(i.getPickupLocation()) * 0.000621371)
+                                        + " miles away"
+                        );
+                    }
+                });
+        ((ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
         //Extra zero if the price doesn't have one
         if(((ItemsViewHolder)holder).price.getText().toString().split("\\.")[1].length() == 1){
