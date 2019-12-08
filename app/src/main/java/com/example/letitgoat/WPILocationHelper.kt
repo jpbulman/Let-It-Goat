@@ -15,17 +15,17 @@ class WPILocationHelper {
     )
 
     fun getLocationOfGordonLibrary() : Location{
-        val library = Location("")
+        val library = Location("Gordon Library")
         library.latitude = 42.2742
-        library.longitude = 71.8065
+        library.longitude = -71.8065
 
         return library
     }
 
     fun getLocationOfAldenHall() : Location{
-        val alden = Location("")
+        val alden = Location("Alden Hall")
         alden.latitude = 42.2731
-        alden.longitude = 71.8083
+        alden.longitude = -71.8083
 
         return alden
     }
