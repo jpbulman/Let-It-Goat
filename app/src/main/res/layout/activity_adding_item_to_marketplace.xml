@@ -14,17 +14,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="240dp"
-                android:maxHeight="240dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:src="@drawable/texthere"
-                android:id="@+id/itemAboutToBeSoldPicture" />
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:maxWidth="240dp"-->
+<!--                android:maxHeight="240dp"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_marginEnd="10dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                android:src="@drawable/texthere"-->
+<!--                android:id="@+id/itemAboutToBeSoldPicture" />-->
+
+            <VideoView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:id="@+id/videoView" />
 
             <ImageButton
                 android:id="@+id/newItemPictureButton"
@@ -35,6 +40,11 @@
                 android:paddingBottom="5dp"
                 android:src="@drawable/white"
                 android:layout_gravity="center" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/videoButton" />
 
         </LinearLayout>
 
