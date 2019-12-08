@@ -70,10 +70,13 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
                                 Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
-                                Location l = (Location) doc.get("pickupLocation");
                                 WPILocationHelper wpiLocationHelper = new WPILocationHelper();
-                                if (l == null) {
-                                    l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                Location l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                if(doc.get("pickupLocation") != null){
+                                    HashMap<String, Object> mapper = (HashMap<String, Object>) doc.get("pickupLocation");
+                                    l = new Location(mapper.get("provider").toString());
+                                    l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
+                                    l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
                                 }
                                 Item i = new Item(
                                         doc.get("name").toString(),
@@ -145,12 +148,10 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         ((ItemsViewHolder)holder).name.setText(i.getName());
         ((ItemsViewHolder)holder).price.setText("$" + i.getPrice());
 
-        final Location[] l = {null};
         SingleShotLocationProvider.requestSingleUpdate(
                 mContext,
                 new SingleShotLocationProvider.LocationCallback() {
                     @Override public void onNewLocationAvailable(Location location) {
-                        Log.d("Location", "my location is " + location.getLatitude() + "  " + location.getLongitude());
 
                         DecimalFormat df = new DecimalFormat("###.##");
 

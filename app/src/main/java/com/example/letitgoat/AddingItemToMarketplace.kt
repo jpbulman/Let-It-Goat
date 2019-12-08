@@ -70,7 +70,6 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        findViewById<Button>(R.id.fab).setOnClickListener{getLastLocation()}
     }
 
     val PERMISSION_ID = 42
@@ -203,6 +202,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
         val wpiLocationHelper = WPILocationHelper()
         var pickupLocation = wpiLocationHelper.locationNameToLocationObjectMap[pickupLocationSpinner.selectedItem.toString()]
+        println(pickupLocation)
         if(pickupLocation == null){
             pickupLocation = wpiLocationHelper.getLocationOfGordonLibrary()
         }
