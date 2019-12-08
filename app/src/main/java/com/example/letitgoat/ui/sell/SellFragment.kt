@@ -23,9 +23,9 @@ class SellFragment : Fragment() {
         sellViewModel=
             ViewModelProviders.of(this).get(SellViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_messages, container, false)
-        val textView: TextView = root.findViewById(R.id.text_messages)
+        // val textView: TextView = root.findViewById(R.id.text_messages)
         sellViewModel.text.observe(this, Observer {
-            textView.text = it
+            //textView.text = it
         })
         setHasOptionsMenu(true)
         return root

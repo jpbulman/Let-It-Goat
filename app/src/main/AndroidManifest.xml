@@ -14,18 +14,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ItemActivity"></activity>
-        <activity android:name=".TmpMainActivity">
-        </activity>    
-        <activity android:name=".AddingItemToMarketplace"></activity>
-        <activity android:name=".ItemOnMarket"></activity>
+        <activity android:name=".ui.messages.ComposeMessageActivity"></activity>
+        <activity android:name=".ItemActivity" />
+        <activity android:name=".TmpMainActivity"></activity>
+        <activity android:name=".AddingItemToMarketplace" />
+        <activity android:name=".ItemOnMarket" />
         <activity
             android:name=".Home"
             android:label="Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".SearchResultsActivity" />
