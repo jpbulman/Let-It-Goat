@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.Image
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
 import android.os.Looper
@@ -34,6 +36,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.view.marginBottom
 import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
 import java.io.File
@@ -76,105 +79,28 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        findViewById<Button>(R.id.videoButton).setOnClickListener{
+        findViewById<ImageButton>(R.id.videoButton).setOnClickListener{
             this.dispatchTakeVideoIntent()
         }
 
-        val builder = StrictMode.VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
+//        val builder = StrictMode.VmPolicy.Builder()
+//        StrictMode.setVmPolicy(builder.build())
     }
 
     val REQUEST_VIDEO_CAPTURE = 1
 
     private fun dispatchTakeVideoIntent() {
         Intent(MediaStore.ACTION_VIDEO_CAPTURE).also { takeVideoIntent ->
-
-            val file = File("VideoFileName.mp4")
-            takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(applicationContext, "$packageName.fileprovider", file))
+            val pather = File(filesDir, "Videos")
+            pather.mkdirs()
+            val file = File(pather,"VideoFileName.mp4")
+            takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, "$packageName.fileprovider", file))
 
             takeVideoIntent.resolveActivity(packageManager)?.also {
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
             }
         }
     }
-
-//    val PERMISSION_ID = 42
-//
-//    private fun checkPermissions(): Boolean {
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-//            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//            return true
-//        }
-//        return false
-//    }
-//
-//    private fun requestPermissions() {
-//        ActivityCompat.requestPermissions(
-//            this,
-//            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-//            PERMISSION_ID
-//        )
-//    }
-//
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-//        if (requestCode == PERMISSION_ID) {
-//            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                // Granted. Start getting the location information
-//            }
-//        }
-//    }
-//
-//    private fun isLocationEnabled(): Boolean {
-//        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-//            LocationManager.NETWORK_PROVIDER
-//        )
-//    }
-//
-//    private val mLocationCallback = object : LocationCallback() {
-//        override fun onLocationResult(locationResult: LocationResult) {
-//            val mLastLocation: Location = locationResult.lastLocation
-////            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-////            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
-//        }
-//    }
-//
-//    private fun requestNewLocationData() {
-//        val mLocationRequest = LocationRequest()
-//        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//        mLocationRequest.interval = 0
-//        mLocationRequest.fastestInterval = 0
-//        mLocationRequest.numUpdates = 1
-//
-//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-//        mFusedLocationClient.requestLocationUpdates(
-//            mLocationRequest, mLocationCallback,
-//            Looper.myLooper()
-//        )
-//    }
-//
-//    private fun getLastLocation() {
-//        if (checkPermissions()) {
-//            if (isLocationEnabled()) {
-//
-//                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-//                    val location: Location? = task.result
-//                    if (location == null) {
-//                        requestNewLocationData()
-//                    } else {
-//                        val lat : Double = location.latitude
-//                        val long : Double = location.longitude
-//                    }
-//                }
-//            } else {
-//                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
-//                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                startActivity(intent)
-//            }
-//        } else {
-//            requestPermissions()
-//        }
-//    }
 
     val REQUEST_IMAGE_CAPTURE = 2
 
@@ -187,29 +113,42 @@ class AddingItemToMarketplace : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-//            val imageBitmap = data.extras!!.get("data") as Bitmap
-//            val picOfAboutToSellItem = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
-//            picOfAboutToSellItem.setImageBitmap(imageBitmap)
-//            picOfAboutToSellItem.rotation = 90f
-//
-//            val baos = ByteArrayOutputStream()
-//            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-//            val b = baos.toByteArray()
-//            val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
-//            this.stringsOfBitmapsOfItems += bitmapAsString
+            val imageBitmap = data!!.extras!!.get("data") as Bitmap
+            val picOfAboutToSellItem = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
+            picOfAboutToSellItem.setImageBitmap(imageBitmap)
+            picOfAboutToSellItem.rotation = 90f
+
+            val baos = ByteArrayOutputStream()
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            val b = baos.toByteArray()
+            val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
+            this.stringsOfBitmapsOfItems += bitmapAsString
         } else if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-
-            var f : File = File(Environment.getExternalStorageDirectory().toString())
-            f.listFiles().forEach lit@{
-                if (it.name == "VideoFileName.mp4") {
-                    f = it
-                    return@lit
+            if(resultCode != Activity.RESULT_CANCELED){
+                var f  = File(filesDir,"Videos")
+                f.listFiles().forEach lit@{
+                    if(it.name == "VideoFileName.mp4"){
+                        f = it
+                        println(111111111)
+                        return@lit
+                    }
                 }
-            }
 
-//            println(intent)
-//            val videoUri: Uri? = intent.data
-            videoView.setVideoURI(f.toUri())
+                itemAboutToBeSoldPicture.requestLayout()
+                itemAboutToBeSoldPicture.layoutParams.width = 0
+                itemAboutToBeSoldPicture.layoutParams.height = 0
+
+                videoView.requestLayout()
+                videoView.layoutParams.width = 1000
+                videoView.layoutParams.height = 750
+
+                val layout = buttonHolder.layoutParams as LinearLayout.LayoutParams
+                layout.setMargins(25,20,0,0)
+
+                videoView.setVideoURI(f.toUri())
+                videoView.setOnPreparedListener { mp -> mp.isLooping = true }
+                videoView.start()
+            }
         }
     }
 
