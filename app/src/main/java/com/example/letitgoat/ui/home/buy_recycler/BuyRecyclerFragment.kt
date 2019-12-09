@@ -63,10 +63,10 @@ class BuyRecyclerFragment : Fragment(),
         // specify an adapter (see also next example)
         if (activity is SearchResultsActivity){
             val activity = activity as SearchResultsActivity
-            mAdapter = BuyViewAdapter(context, activity.searchQuery)
+            mAdapter = BuyViewAdapter(context, title, activity.searchQuery)
         }
         else {
-            mAdapter = BuyViewAdapter(context)
+            mAdapter = BuyViewAdapter(context, title)
         }
         mAdapter!!.setClickListener(this)
         recyclerView?.adapter = mAdapter

@@ -94,6 +94,12 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
                                     l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
                                 }
+
+                                String category = "other";
+                                if(doc.containsKey("category")){
+                                    category = doc.get("category").toString();
+                                }
+
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
@@ -101,7 +107,8 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         doc.get("description").toString(),
                                         d,
                                         (List<String>) doc.get("stringsOfBitmapofPicuresOfItem"),
-                                        l
+                                        l,
+                                        category
                                 );
                                 usersItemsOnMarket.add(i);
                                 usersItemsOnMarketIds.add(document.getId());

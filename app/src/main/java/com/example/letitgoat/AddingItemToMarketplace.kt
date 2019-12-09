@@ -106,6 +106,19 @@ class AddingItemToMarketplace : AppCompatActivity() {
         database = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
+        val spinner_categories: Spinner = findViewById(R.id.spinner_categories)
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.categories_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinner_categories.adapter = adapter
+        }
+
         val addingItemToMarketplace = findViewById<Button>(R.id.addToMarketPlaceButton)
         addingItemToMarketplace.setOnClickListener{
             addItemToMarketplace()
@@ -227,6 +240,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
         val user = MainActivity.user
         val description = findViewById<EditText>(R.id.descriptionField).text.toString()
         val currTime = Date()
+        val category = findViewById<Spinner>(R.id.spinner_categories).selectedItem.toString()
 
         if(name == "" || description == ""){
             validInput = false
@@ -249,7 +263,8 @@ class AddingItemToMarketplace : AppCompatActivity() {
             description = description,
             postedTimeStamp = currTime,
             stringsOfBitmapofPicuresOfItem = this.stringsOfBitmapsOfItems,
-            pickupLocation = pickupLocation
+            pickupLocation = pickupLocation,
+            category = category
         )
 
         //Adds item being sold to db
