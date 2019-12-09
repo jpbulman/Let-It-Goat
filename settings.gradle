@@ -1,2 +1,3 @@
-include ':app'
+include ':app', ':image_slider'
 rootProject.name='Let It Goat'
+project(':image_slider').projectDir = new File('library')

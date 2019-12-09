@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.letitgoat.AddingItemToMarketplace;
 import com.example.letitgoat.ItemActivity;
@@ -142,12 +143,13 @@ public class SellRecyclerFragment extends Fragment implements SellViewAdapter.It
     }
 
     @Override
-    public void onItemClick(View view, int position, Item item) {
+    public void onItemClick(View view, int position, Item item, String id) {
 //        mAdapter.getItem(position);
         Log.d("SellItemsFragment", item.getName());
         Intent intent = new Intent(getContext(), AddingItemToMarketplace.class);
         intent.putExtra("extra_item", item);
+        intent.putExtra("id", id);
         startActivity(intent);
-//        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "You clicked " + id, Toast.LENGTH_SHORT).show();
     }
 }

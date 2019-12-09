@@ -60,19 +60,20 @@ dependencies {
     //JSON parsing
     implementation 'com.beust:klaxon:5.0.1'
     //slider
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.squareup.picasso:picasso:2.3.2'
-    implementation 'com.nineoldandroids:library:2.4.0'
-    implementation 'com.daimajia.slider:library:1.1.5@aar'
-    implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
-    implementation 'com.squareup.picasso:picasso:2.3.2'
+//    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+//    implementation 'com.squareup.picasso:picasso:2.3.2'
+//    implementation 'com.nineoldandroids:library:2.4.0'
+//    implementation 'com.daimajia.slider:library:1.1.5@aar'
+//    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+//    implementation 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
+
     //RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     // Category Tab
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation project(path: ':image_slider')
 }
 
 apply plugin: 'com.google.gms.google-services'

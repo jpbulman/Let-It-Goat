@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -12,7 +13,6 @@ import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
 import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
 import com.google.android.material.tabs.TabLayout
-import java.lang.ref.WeakReference
 import java.util.*
 
 
@@ -40,7 +40,6 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 
         setHasOptionsMenu(true)
 
-
         return root
     }
 
@@ -49,11 +48,18 @@ class HomeFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
 
         val list_title: ArrayList<String> = ArrayList()
         list_title.add("All")
-        list_title.add("Book")
-        list_title.add("Car")
-        list_title.add("Switch")
-        list_title.add("PS4")
-        list_title.add("XBox")
+        activity?.let {
+            ArrayAdapter.createFromResource(
+                it,
+                R.array.planets_array,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                for (i in 0 until adapter.count) {
+                    list_title.add(adapter.getItem(i).toString())
+                }
+            }
+        }
+
         viewPagerAdapter = ViewPagerAdapter(childFragmentManager, list_title)
         viewPager = view.findViewById(R.id.pager)
         viewPager.adapter = viewPagerAdapter

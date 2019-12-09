@@ -35,13 +35,13 @@ import java.util.Map;
 public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private ItemClickListener mClickListener;
     private Context mContext;
-    private List<Item> usersItemsOnMarket;
+    private Map<String, Item> usersItemsOnMarket;
     private FirebaseFirestore db;
 
     SellViewAdapter(Context context) {
         this.mContext = mContext;
         this.db = FirebaseFirestore.getInstance();
-        this.usersItemsOnMarket = new ArrayList<>();
+        this.usersItemsOnMarket = new HashMap<>();
 
         db.collection("Items")
                 .whereEqualTo("user", MainActivity.Companion.getUser())
@@ -51,21 +51,27 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for(QueryDocumentSnapshot document : task.getResult()){
+                                String id = document.getId();
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
                                 System.out.println(doc.get("postedTimeStamp").toString());
                                 Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
                                 Log.d("check_sell_item", doc.get("name").toString());
+                                String category = null;
+                                if (doc.get("category") != null) {
+                                    category = doc.get("category").toString();
+                                }
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
                                         u,
                                         doc.get("description").toString(),
                                         d,
-                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem")
+                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem"),
+                                        category
                                 );
-                                usersItemsOnMarket.add(i);
+                                usersItemsOnMarket.put(id, i);
                                 notifyDataSetChanged();
                             }
                         } else {
@@ -95,9 +101,16 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view,
-                    getAdapterPosition(),
-                    usersItemsOnMarket.get(getAdapterPosition()));
+            if (mClickListener != null) {
+                int position = getAdapterPosition();
+                Map.Entry<String, Item> entry = (Map.Entry<String, Item>)usersItemsOnMarket.entrySet().toArray()[position];
+                String id = entry.getKey();
+                Item i = entry.getValue();
+                mClickListener.onItemClick(view,
+                        position,
+                        i,
+                        id);
+            }
         }
     }
 
@@ -122,23 +135,26 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Item i = this.usersItemsOnMarket.get(position);
+        Map.Entry<String, Item> entry = (Map.Entry<String, Item>)this.usersItemsOnMarket.entrySet().toArray()[position];
+        Item i = entry.getValue();
         ((ItemsViewHolder)holder).name.setText(i.getName());
         ((ItemsViewHolder)holder).price.setText("$" + i.getPrice());
         ((ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
 
-        byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
-        Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        if (i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
+            byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
+            Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
 
-        Matrix matrix = new Matrix();
+            Matrix matrix = new Matrix();
 
-        matrix.postRotate(90);
+            matrix.postRotate(90);
 
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
 
-        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
-        ((ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
+            ((ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
+        }
     }
 
     @Override
@@ -154,6 +170,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position, Item item);
+        void onItemClick(View view, int position, Item item, String id);
     }
 }

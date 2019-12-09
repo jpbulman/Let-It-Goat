@@ -13,5 +13,6 @@ data class Item(
     val user: User,
     val description: String,
     val postedTimeStamp: Date,
-    val stringsOfBitmapofPicuresOfItem: List<String>
+    val stringsOfBitmapofPicuresOfItem: List<String>,
+    val category: String?
 ) : Serializable

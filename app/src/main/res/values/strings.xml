@@ -15,4 +15,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dollarsign">$</string>
     <string name="_100_00">100.00</string>
+    <string-array name="planets_array">
+        <item>Book</item>
+        <item>Car</item>
+        <item>Switch</item>
+        <item>PS4</item>
+        <item>XBox</item>
+        <item>Others</item>
+    </string-array>
 </resources>
