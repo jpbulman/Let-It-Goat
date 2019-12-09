@@ -28,30 +28,32 @@ class ItemActivity : AppCompatActivity() {
         price.setText("$" + item.price.toString())
         description.setText(item.description)
 
-        val encodeByte: ByteArray = Base64.decode(
-            item.stringsOfBitmapofPicuresOfItem.get(0),
-            Base64.DEFAULT
-        )
-        val b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+        if(item.stringsOfBitmapofPicuresOfItem.size != 0) {
+            val encodeByte: ByteArray = Base64.decode(
+                item.stringsOfBitmapofPicuresOfItem.get(0),
+                Base64.DEFAULT
+            )
+            val b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
 
-        val matrix = Matrix()
+            val matrix = Matrix()
 
-        matrix.postRotate(90f)
+            matrix.postRotate(90f)
 
-        val scaledBitmap = Bitmap.createScaledBitmap(b, b.width, b.height, true)
+            val scaledBitmap = Bitmap.createScaledBitmap(b, b.width, b.height, true)
 
-        val rotatedBitmap = Bitmap.createBitmap(
-            scaledBitmap,
-            0,
-            0,
-            scaledBitmap.width,
-            scaledBitmap.height,
-            matrix,
-            true
-        )
+            val rotatedBitmap = Bitmap.createBitmap(
+                scaledBitmap,
+                0,
+                0,
+                scaledBitmap.width,
+                scaledBitmap.height,
+                matrix,
+                true
+            )
 
-        img.setImageBitmap(
-            rotatedBitmap
-        )
+            img.setImageBitmap(
+                rotatedBitmap
+            )
+        }
     }
 }

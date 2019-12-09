@@ -1,6 +1,5 @@
 package com.example.letitgoat.ui.sell.sell_recycler;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -8,18 +7,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
-import com.example.letitgoat.AddingItemToMarketplace;
 import com.example.letitgoat.SingleShotLocationProvider;
 import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.User;
@@ -30,16 +30,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.letitgoat.MainActivity;
 import com.example.letitgoat.R;
 import com.example.letitgoat.db_models.Item;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,12 +59,18 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ItemClickListener mClickListener;
     private Context mContext;
     private List<Item> usersItemsOnMarket;
+    private List<String> usersItemsOnMarketIds;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private List<ItemsViewHolder> itemsViewHolders;
 
     SellViewAdapter(Context context) {
         this.mContext = context;
         this.db = FirebaseFirestore.getInstance();
         this.usersItemsOnMarket = new ArrayList<>();
+        this.usersItemsOnMarketIds = new ArrayList<>();
+        this.storage = FirebaseStorage.getInstance();
+        this.itemsViewHolders = new ArrayList<>();
 
         db.collection("Items")
                 .whereEqualTo("user", MainActivity.Companion.getUser())
@@ -88,6 +102,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         l
                                 );
                                 usersItemsOnMarket.add(i);
+                                usersItemsOnMarketIds.add(document.getId());
                                 notifyDataSetChanged();
                             }
                         } else {
@@ -102,6 +117,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     // you provide access to all the views for a data single_buy in a view holder
     public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView image;
+        private VideoView videoView;
         private TextView name;
         private TextView price;
         private TextView date;
@@ -144,8 +160,40 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return viewHolder;
     }
 
+    private void updateListItem(int position, File video) {
+        RecyclerView view = ((Activity) mContext).findViewById(R.id.sell_recyclerview);
+        View v = view.getLayoutManager().findViewByPosition(position);
+
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
+                0,
+                0,
+                0
+        );
+
+        LinearLayout.LayoutParams videoParams = new LinearLayout.LayoutParams(
+                0,
+                500,
+                2
+        );
+        videoParams.leftMargin = 45;
+
+        ImageView imageView = v.findViewById(R.id.itemImage);
+        imageView.setLayoutParams(imageParams);
+
+        VideoView vid = v.findViewById(R.id.itemVideo);
+        vid.setVideoURI(Uri.fromFile(video));
+        vid.setLayoutParams(videoParams);
+        vid.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        vid.start();
+    }
+
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         final Item i = this.usersItemsOnMarket.get(position);
         ((ItemsViewHolder)holder).name.setText(i.getName());
         ((ItemsViewHolder)holder).price.setText("$" + i.getPrice());
@@ -157,7 +205,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                         DecimalFormat df = new DecimalFormat("###.##");
 
-                        System.out.println(i.getPickupLocation().getLatitude() + " " + i.getPickupLocation().getLongitude());
                         ((ItemsViewHolder)holder).pickupLocation.setText(
                                 i.getPickupLocation().getProvider() + ": " +
                                         df.format(location.distanceTo(i.getPickupLocation()) * 0.000621371)
@@ -174,8 +221,30 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ((ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
 
-        if(i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
+        if(i.getStringsOfBitmapofPicuresOfItem().isEmpty()){
+            final String docId = this.usersItemsOnMarketIds.get(position);
 
+            StorageReference storageRef = storage.getReference();
+
+            StorageReference pathReference = storageRef.child(docId + "/VideoFileName.mp4");
+
+            final long FIFTY_MEGABYTES = 1024 * 1024 * 50;
+            pathReference.getBytes(FIFTY_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    // Data for "images/island.jpg" is returns, use this as needed
+                    File downloaderFilee = writeByte(bytes, docId);
+                    System.out.println(getFileSizeMegaBytes(downloaderFilee));
+                    System.out.println(downloaderFilee.getName());
+                    updateListItem(position, downloaderFilee);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        } else {
             byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
             Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
 
@@ -187,8 +256,39 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
-            ((ItemsViewHolder) holder).image.setImageBitmap(rotatedBitmap);
+            ((ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
         }
+    }
+
+    private static File writeByte(byte[] bytes, String docId) {
+        File localFile = null;
+        try {
+            localFile = File.createTempFile(docId, ".mp4");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            OutputStream os = new FileOutputStream(localFile);
+
+            // Starts writing the bytes in it
+            os.write(bytes);
+            System.out.println("Successfully"
+                    + " byte inserted");
+
+            // Close the file
+            os.close();
+            return localFile;
+        }
+
+        catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+
+        return localFile;
+    }
+
+    private static String getFileSizeMegaBytes(File file) {
+        return (double) file.length() / (1024 * 1024) + " mb";
     }
 
     @Override
@@ -196,6 +296,9 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return this.usersItemsOnMarket.size();
     }
 
+//    public ItemsViewHolder getItem(int positioin){
+//
+//    }
 
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {

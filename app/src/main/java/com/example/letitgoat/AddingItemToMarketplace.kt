@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -27,21 +26,35 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.Image
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Environment
 import android.os.Looper
+import android.os.StrictMode
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import androidx.core.view.marginBottom
 import com.google.android.gms.location.*
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
+import java.io.File
 
 
 class AddingItemToMarketplace : AppCompatActivity() {
 
     private lateinit var database: FirebaseFirestore
     private var stringsOfBitmapsOfItems: List<String> = ArrayList()
+    private var videoFile: File = File("")
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var storage: FirebaseStorage
+
+    private var hasTakenVideo = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +104,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
 
         database = FirebaseFirestore.getInstance()
+        storage = FirebaseStorage.getInstance()
 
         val addingItemToMarketplace = findViewById<Button>(R.id.addToMarketPlaceButton)
         addingItemToMarketplace.setOnClickListener{
@@ -116,87 +130,30 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-    }
-
-    val PERMISSION_ID = 42
-
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            return true
+        findViewById<ImageButton>(R.id.videoButton).setOnClickListener{
+            this.dispatchTakeVideoIntent()
         }
-        return false
+
+//        val builder = StrictMode.VmPolicy.Builder()
+//        StrictMode.setVmPolicy(builder.build())
     }
 
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-            PERMISSION_ID
-        )
-    }
+    val REQUEST_VIDEO_CAPTURE = 1
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == PERMISSION_ID) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Granted. Start getting the location information
+    private fun dispatchTakeVideoIntent() {
+        Intent(MediaStore.ACTION_VIDEO_CAPTURE).also { takeVideoIntent ->
+            val pather = File(filesDir, "Videos")
+            pather.mkdirs()
+            val file = File(pather,"VideoFileName.mp4")
+            takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, "$packageName.fileprovider", file))
+
+            takeVideoIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
             }
         }
     }
 
-    private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
-    private val mLocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            val mLastLocation: Location = locationResult.lastLocation
-//            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-//            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
-        }
-    }
-
-    private fun requestNewLocationData() {
-        val mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = 0
-        mLocationRequest.fastestInterval = 0
-        mLocationRequest.numUpdates = 1
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationClient.requestLocationUpdates(
-            mLocationRequest, mLocationCallback,
-            Looper.myLooper()
-        )
-    }
-
-    private fun getLastLocation() {
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-
-                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-                    val location: Location? = task.result
-                    if (location == null) {
-                        requestNewLocationData()
-                    } else {
-                        val lat : Double = location.latitude
-                        val long : Double = location.longitude
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-            }
-        } else {
-            requestPermissions()
-        }
-    }
-
-    val REQUEST_IMAGE_CAPTURE = 1
+    val REQUEST_IMAGE_CAPTURE = 2
 
     private fun dispatchTakePictureIntent() {
         val inten = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -217,6 +174,34 @@ class AddingItemToMarketplace : AppCompatActivity() {
             val b = baos.toByteArray()
             val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
             this.stringsOfBitmapsOfItems += bitmapAsString
+        } else if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+            if(resultCode != Activity.RESULT_CANCELED){
+                var f  = File(filesDir,"Videos")
+                f.listFiles().forEach lit@{
+                    if(it.name == "VideoFileName.mp4"){
+                        f = it
+                        return@lit
+                    }
+                }
+
+                itemAboutToBeSoldPicture.requestLayout()
+                itemAboutToBeSoldPicture.layoutParams.width = 0
+                itemAboutToBeSoldPicture.layoutParams.height = 0
+
+                videoView.requestLayout()
+                videoView.layoutParams.width = 1000
+                videoView.layoutParams.height = 750
+
+                val layout = buttonHolder.layoutParams as LinearLayout.LayoutParams
+                layout.setMargins(25,20,0,0)
+
+                this.hasTakenVideo = true
+                this.videoFile = f
+
+                videoView.setVideoURI(f.toUri())
+                videoView.setOnPreparedListener { mediaPlayer -> mediaPlayer.isLooping = true }
+                videoView.start()
+            }
         }
     }
 
@@ -240,7 +225,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             validInput = false
         }
 
-        if(this.stringsOfBitmapsOfItems.isEmpty()){
+        if(this.stringsOfBitmapsOfItems.isEmpty() && !this.hasTakenVideo){
             validInput = false
         }
 
@@ -263,9 +248,20 @@ class AddingItemToMarketplace : AppCompatActivity() {
             pickupLocation = pickupLocation
         )
 
-        //Adds single_buy to db
+        //Adds item being sold to db
         if (validInput) {
-            database.collection("Items").add(item)
+            database.collection("Items").add(item).addOnSuccessListener { documentReference ->
+
+                val file = Uri.fromFile(this.videoFile)
+                val riversRef = storage.reference.child("${documentReference.id}/${file.lastPathSegment}")
+                val uploadTask = riversRef.putFile(file)
+                uploadTask.addOnFailureListener {
+                    println("Could not upload video to storage!")
+                }.addOnSuccessListener {
+                    println("Uploaded video to storage!")
+                }
+
+            }
             startActivity(Intent(this, Home::class.java))
         } else {
             toast("One or more of the fields is/are invalid")
