@@ -229,11 +229,8 @@ class AddingItemToMarketplace : AppCompatActivity() {
             validInput = false
         }
 
-        println(pickupLocationSpinner.selectedItem.toString())
-
         val wpiLocationHelper = WPILocationHelper()
         var pickupLocation = wpiLocationHelper.locationNameToLocationObjectMap[pickupLocationSpinner.selectedItem.toString()]
-        println(pickupLocation)
         if(pickupLocation == null){
             pickupLocation = wpiLocationHelper.getLocationOfGordonLibrary()
         }
