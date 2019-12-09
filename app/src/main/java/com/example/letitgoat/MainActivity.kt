@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
                                 email = document.data?.get("email").toString(),
                                 profilePicture = document.data?.get("profilePicture").toString()
                             )
-                            println(user)
                         } else {
                             val defaultImageBitmap = BitmapFactory.decodeResource(resources, R.drawable.blank)
                             val baos = ByteArrayOutputStream()
