@@ -26,15 +26,39 @@
                 android:src="@drawable/texthere"
                 android:id="@+id/itemAboutToBeSoldPicture" />
 
-            <ImageButton
-                android:id="@+id/newItemPictureButton"
-                android:layout_width="75dp"
+            <VideoView
+                android:layout_width="00dp"
+                android:layout_height="00dp"
+                android:layout_gravity="center"
+                android:id="@+id/videoView" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#292b2c"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:src="@drawable/white"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:id="@+id/buttonHolder" >
+
+                <ImageButton
+                    android:id="@+id/newItemPictureButton"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="#292b2c"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/white" />
+
+                <ImageButton
+                    android:layout_width="75dp"
+                    android:layout_height="34dp"
+                    android:background="#292b2c"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/videoButton"
+                    android:src="@drawable/recorder"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
