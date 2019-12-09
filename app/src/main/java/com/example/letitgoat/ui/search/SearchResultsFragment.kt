@@ -1,21 +1,19 @@
-package com.example.letitgoat.ui.home
+package com.example.letitgoat.ui.search
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.SearchView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
-import com.example.letitgoat.AddingItemToMarketplace
 import com.example.letitgoat.R
-import com.example.letitgoat.SearchResultsActivity
+import com.example.letitgoat.ui.home.HomeViewModel
+import com.example.letitgoat.ui.home.SliderFragment
+import com.example.letitgoat.ui.home.ViewPagerAdapter
 import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
-import com.google.android.material.tabs.TabLayout
-import java.lang.ref.WeakReference
-import java.util.*
+import java.util.ArrayList
 
 
 class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionListener,
@@ -42,16 +40,20 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
 
         setHasOptionsMenu(true)
 
+
         return root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         var resultsText = view?.findViewById<TextView>(R.id.num_results2)
-        if(activity is SearchResultsActivity)
-        {
-            resultsText?.text = "5 Results for ${(activity as SearchResultsActivity).searchQuery}"
-        }
+
+        var activity = (activity as SearchResultsActivity)
+        resultsText?.text = "5 Results for ${activity.searchQuery}"
+//        viewPagerAdapter = ViewPagerAdapter(childFragmentManager, activity.searchQuery)
+//        viewPager = view.findViewById(R.id.pager)
+//        viewPager.adapter = viewPagerAdapter
 
         super.onViewCreated(view, savedInstanceState)
     }

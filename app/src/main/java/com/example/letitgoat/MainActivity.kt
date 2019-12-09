@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     fun login(){
         val unameField = findViewById<EditText>(R.id.usernameField)
         val pwdField = findViewById<EditText>(R.id.passwordField)
-        
+
         doAsync{
             val username = unameField.text.toString()
 

@@ -1,20 +1,12 @@
-package com.example.letitgoat
+package com.example.letitgoat.ui.search
 
-import android.app.Activity
 import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.widget.SearchView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.letitgoat.R
+import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
 
 class SearchResultsActivity : AppCompatActivity() {
     var searchQuery = ""

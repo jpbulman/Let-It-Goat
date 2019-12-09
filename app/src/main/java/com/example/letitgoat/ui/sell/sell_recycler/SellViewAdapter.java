@@ -2,6 +2,7 @@ package com.example.letitgoat.ui.sell.sell_recycler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,6 +11,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.Layout;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +23,12 @@ import android.widget.VideoView;
 import com.example.letitgoat.SingleShotLocationProvider;
 import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.User;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.letitgoat.MainActivity;
 import com.example.letitgoat.R;
@@ -133,7 +139,9 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(view,
+                    getAdapterPosition(),
+                    usersItemsOnMarket.get(getAdapterPosition()));
         }
     }
 
@@ -302,6 +310,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, Item item);
     }
 }
