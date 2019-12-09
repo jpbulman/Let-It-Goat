@@ -29,8 +29,6 @@
         </provider>
 
         <activity android:name=".ItemActivity"></activity>
-        <activity android:name=".TmpMainActivity">
-        </activity>
         <activity android:name=".AddingItemToMarketplace"></activity>
         <activity android:name=".ui.messages.ComposeMessageActivity"></activity>
         <activity android:name=".ItemOnMarket"></activity>
