@@ -13,6 +13,7 @@ import com.example.letitgoat.ui.home.HomeViewModel
 import com.example.letitgoat.ui.home.SliderFragment
 import com.example.letitgoat.ui.home.ViewPagerAdapter
 import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
+import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment.Companion.newInstance
 import java.util.ArrayList
 
 
@@ -23,9 +24,6 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
 
     private var root: View? = null
     private var menu: Menu? = null
-
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
-    private lateinit var viewPager: ViewPager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,10 +48,9 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
         var resultsText = view?.findViewById<TextView>(R.id.num_results2)
 
         var activity = (activity as SearchResultsActivity)
-        resultsText?.text = "5 Results for ${activity.searchQuery}"
-//        viewPagerAdapter = ViewPagerAdapter(childFragmentManager, activity.searchQuery)
-//        viewPager = view.findViewById(R.id.pager)
-//        viewPager.adapter = viewPagerAdapter
+        resultsText?.text = "? Results for ${activity.searchQuery}"
+
+     //   var a = BuyRecyclerFragment.newInstance("Search Results")
 
         super.onViewCreated(view, savedInstanceState)
     }

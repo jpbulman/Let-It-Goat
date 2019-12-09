@@ -1,11 +1,16 @@
 package com.example.letitgoat
 
+import android.Manifest
 import android.app.SearchManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -28,7 +33,14 @@ class Home : AppCompatActivity() {
             R.id.navigation_home, R.id.navigation_messages, R.id.navigation_settings, R.id.navigation_sell))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION), 123 )
+        }
     }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
