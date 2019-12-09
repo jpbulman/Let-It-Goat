@@ -38,6 +38,7 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.view.marginBottom
 import com.google.android.gms.location.*
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
 import java.io.File
 
@@ -46,14 +47,19 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
     private lateinit var database: FirebaseFirestore
     private var stringsOfBitmapsOfItems: List<String> = ArrayList()
+    private var videoFile: File = File("")
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var storage: FirebaseStorage
+
+    private var hasTakenVideo = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding_item_to_marketplace)
 
         database = FirebaseFirestore.getInstance()
+        storage = FirebaseStorage.getInstance()
 
         val addingItemToMarketplace = findViewById<Button>(R.id.addToMarketPlaceButton)
         addingItemToMarketplace.setOnClickListener{
@@ -129,7 +135,6 @@ class AddingItemToMarketplace : AppCompatActivity() {
                 f.listFiles().forEach lit@{
                     if(it.name == "VideoFileName.mp4"){
                         f = it
-                        println(111111111)
                         return@lit
                     }
                 }
@@ -145,8 +150,11 @@ class AddingItemToMarketplace : AppCompatActivity() {
                 val layout = buttonHolder.layoutParams as LinearLayout.LayoutParams
                 layout.setMargins(25,20,0,0)
 
+                this.hasTakenVideo = true
+                this.videoFile = f
+
                 videoView.setVideoURI(f.toUri())
-                videoView.setOnPreparedListener { mp -> mp.isLooping = true }
+                videoView.setOnPreparedListener { mediaPlayer -> mediaPlayer.isLooping = true }
                 videoView.start()
             }
         }
@@ -172,7 +180,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             validInput = false
         }
 
-        if(this.stringsOfBitmapsOfItems.isEmpty()){
+        if(this.stringsOfBitmapsOfItems.isEmpty() && !this.hasTakenVideo){
             validInput = false
         }
 
@@ -195,9 +203,20 @@ class AddingItemToMarketplace : AppCompatActivity() {
             pickupLocation = pickupLocation
         )
 
-        //Adds single_buy to db
+        //Adds item being sold to db
         if (validInput) {
-            database.collection("Items").add(item)
+            database.collection("Items").add(item).addOnSuccessListener { documentReference ->
+
+                val file = Uri.fromFile(this.videoFile)
+                val riversRef = storage.reference.child("${documentReference.id}/${file.lastPathSegment}")
+                val uploadTask = riversRef.putFile(file)
+                uploadTask.addOnFailureListener {
+                    println("Could not upload video to storage!")
+                }.addOnSuccessListener {
+                    println("Uploaded video to storage!")
+                }
+
+            }
             startActivity(Intent(this, Home::class.java))
         } else {
             toast("One or more of the fields is/are invalid")
