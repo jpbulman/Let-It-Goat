@@ -216,7 +216,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         );
                     }
                 });
-        ((ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
+//        ((ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
         //Extra zero if the price doesn't have one
         if(((ItemsViewHolder)holder).price.getText().toString().split("\\.")[1].length() == 1){

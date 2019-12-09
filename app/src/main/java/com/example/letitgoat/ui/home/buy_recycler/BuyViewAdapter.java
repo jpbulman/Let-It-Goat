@@ -25,6 +25,8 @@ import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.example.letitgoat.MainActivity;
 import com.example.letitgoat.R;
+import com.example.letitgoat.SingleShotLocationProvider;
+import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.Item;
 import com.example.letitgoat.db_models.User;
 import com.example.letitgoat.ui.sell.sell_recycler.SellViewAdapter;
@@ -35,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +69,14 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 System.out.println(doc.get("postedTimeStamp").toString());
                                 Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
                                 Log.d("check_buy_item", doc.get("name").toString());
+                                WPILocationHelper wpiLocationHelper = new WPILocationHelper();
+                                Location l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                if(doc.get("pickupLocation") != null){
+                                    HashMap<String, Object> mapper = (HashMap<String, Object>) doc.get("pickupLocation");
+                                    l = new Location(mapper.get("provider").toString());
+                                    l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
+                                    l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
+                                }
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
@@ -73,7 +84,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         doc.get("description").toString(),
                                         d,
                                         (List<String>)doc.get("stringsOfBitmapofPicuresOfItem"),
-                                        new Location("TODO")
+                                        l
                                 );
                                 itemsOnMarket.add(i);
                                 notifyDataSetChanged();
@@ -93,6 +104,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView name;
         private TextView price;
         private TextView date;
+        private TextView pickupLocation;
 
         ItemsViewHolder(View v) {
             super(v);
@@ -100,6 +112,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             name = v.findViewById(R.id.name);
             price = v.findViewById(R.id.price);
             date = v.findViewById(R.id.date);
+            pickupLocation = v.findViewById(R.id.location);
             v.setOnClickListener(this);
         }
 
@@ -211,12 +224,32 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemsViewHolder) {
-            Item i = this.itemsOnMarket.get(position - 1);
+            final Item i = this.itemsOnMarket.get(position - 1);
             ((BuyViewAdapter.ItemsViewHolder)holder).name.setText(i.getName());
             ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice());
             ((BuyViewAdapter.ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
+
+            //Extra zero if the price doesn't have one
+            if(((BuyViewAdapter.ItemsViewHolder)holder).price.getText().toString().split("\\.")[1].length() == 1){
+                ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice() + "0");
+            }
+
+            SingleShotLocationProvider.requestSingleUpdate(
+                    mContext,
+                    new SingleShotLocationProvider.LocationCallback() {
+                        @Override public void onNewLocationAvailable(Location location) {
+                            DecimalFormat df = new DecimalFormat("###.##");
+                            System.out.println(i.getName());
+                            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(
+                                    i.getPickupLocation().getProvider() + ": " +
+                                            df.format(location.distanceTo(i.getPickupLocation()) * 0.000621371)
+                                            + " miles away"
+                            );
+                        }
+                    });
+//            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
             if(i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
 
