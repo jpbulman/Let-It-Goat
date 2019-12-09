@@ -250,18 +250,22 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
         //Adds item being sold to db
         if (validInput) {
-            database.collection("Items").add(item).addOnSuccessListener { documentReference ->
+            if(this.stringsOfBitmapsOfItems.isEmpty()){
+                database.collection("Items").add(item).addOnSuccessListener { documentReference ->
+                    val file = Uri.fromFile(this.videoFile)
+                    val riversRef = storage.reference.child("${documentReference.id}/${file.lastPathSegment}")
+                    val uploadTask = riversRef.putFile(file)
+                    uploadTask.addOnFailureListener {
+                        println("Could not upload video to storage!")
+                    }.addOnSuccessListener {
+                        println("Uploaded video to storage!")
+                    }
 
-                val file = Uri.fromFile(this.videoFile)
-                val riversRef = storage.reference.child("${documentReference.id}/${file.lastPathSegment}")
-                val uploadTask = riversRef.putFile(file)
-                uploadTask.addOnFailureListener {
-                    println("Could not upload video to storage!")
-                }.addOnSuccessListener {
-                    println("Uploaded video to storage!")
                 }
-
+            } else {
+                database.collection("Items").add(item)
             }
+
             startActivity(Intent(this, Home::class.java))
         } else {
             toast("One or more of the fields is/are invalid")

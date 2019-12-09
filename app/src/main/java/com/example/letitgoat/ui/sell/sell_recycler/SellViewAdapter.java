@@ -73,7 +73,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.itemsViewHolders = new ArrayList<>();
 
         db.collection("Items")
-                .whereEqualTo("user", MainActivity.Companion.getUser())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -83,6 +82,11 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
+
+                                if(!u.getEmail().equals(MainActivity.Companion.getUser().getEmail())){
+                                    continue;
+                                }
+
                                 Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
                                 WPILocationHelper wpiLocationHelper = new WPILocationHelper();
                                 Location l = wpiLocationHelper.getLocationOfGordonLibrary();
@@ -234,8 +238,8 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onSuccess(byte[] bytes) {
                     // Data for "images/island.jpg" is returns, use this as needed
                     File downloaderFilee = writeByte(bytes, docId);
-                    System.out.println(getFileSizeMegaBytes(downloaderFilee));
-                    System.out.println(downloaderFilee.getName());
+//                    System.out.println(getFileSizeMegaBytes(downloaderFilee));
+//                    System.out.println(downloaderFilee.getName());
                     updateListItem(position, downloaderFilee);
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -272,8 +276,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             // Starts writing the bytes in it
             os.write(bytes);
-            System.out.println("Successfully"
-                    + " byte inserted");
+//            System.out.println("Successfully" + " byte inserted");
 
             // Close the file
             os.close();
@@ -281,7 +284,7 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         catch (Exception e) {
-            System.out.println("Exception: " + e);
+            e.printStackTrace();
         }
 
         return localFile;
