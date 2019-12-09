@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -71,7 +72,8 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         u,
                                         doc.get("description").toString(),
                                         d,
-                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem")
+                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem"),
+                                        new Location("TODO")
                                 );
                                 itemsOnMarket.add(i);
                                 notifyDataSetChanged();
@@ -216,18 +218,21 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice());
             ((BuyViewAdapter.ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
 
-            byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
-            Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            if(i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
 
-            Matrix matrix = new Matrix();
+                byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
+                Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
 
-            matrix.postRotate(90);
+                Matrix matrix = new Matrix();
 
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
+                matrix.postRotate(90);
 
-            Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
 
-            ((BuyViewAdapter.ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+                ((BuyViewAdapter.ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
+            }
+
         }
     }
 

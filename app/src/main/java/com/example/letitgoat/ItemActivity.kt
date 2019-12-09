@@ -16,7 +16,7 @@ class ItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_on_market)
-        val item = intent.getSerializableExtra("extra_item") as Item
+        val item = intent.getParcelableExtra("extra_item") as Item
         Log.d("ItemActivity", item.name)
 
         val img = findViewById<ImageView>(R.id.single_item_img)
