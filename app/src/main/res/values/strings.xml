@@ -14,6 +14,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="dollarsign">$</string>
     <string name="_100_00">100.00</string>
+    <string-array name="categories_array">
+        <item>Book</item>
+        <item>Car</item>
+        <item>Switch</item>
+        <item>PS4</item>
+        <item>XBox</item>
+        <item>Others</item>
+    </string-array>
     <string name="put_item_on_wpi_marketplace">Put item on market</string>
     <string name="description_of_your_product">Description of your product</string>
 </resources>

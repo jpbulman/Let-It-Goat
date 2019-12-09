@@ -28,25 +28,24 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
-import com.example.letitgoat.MainActivity;
 import com.example.letitgoat.R;
 import com.example.letitgoat.SingleShotLocationProvider;
 import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.Item;
 import com.example.letitgoat.db_models.User;
-import com.example.letitgoat.ui.sell.sell_recycler.SellViewAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -69,12 +68,12 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private FirebaseStorage storage;
     private boolean isSearchResult = false;
 
-    BuyViewAdapter(Context mContext) {
-        this(mContext, null);
+    BuyViewAdapter(Context mContext, String category) {
+        this(mContext, category, null);
 
     }
 
-    public BuyViewAdapter(@Nullable Context context, final String searchQuery) {
+    public BuyViewAdapter(@Nullable Context context, String category, final String searchQuery) {
         this.mContext = context;
         this.storage = FirebaseStorage.getInstance();
         this.db = FirebaseFirestore.getInstance();
@@ -84,28 +83,39 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             isSearchResult = true;
         }
 
-        db.collection("Items")
-                .get()
+        CollectionReference dbItems = db.collection("Items");
+        Query subset;
+        if (!category.equals("All")) {
+            subset = dbItems.whereEqualTo("category", category);
+        } else {
+            subset = dbItems.limit(100);
+        }
+
+        subset.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document : task.getResult()){
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
-                                Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
+                                Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
                                 Log.d("check_buy_item", doc.get("name").toString());
                                 WPILocationHelper wpiLocationHelper = new WPILocationHelper();
                                 Location l = wpiLocationHelper.getLocationOfGordonLibrary();
-                                if(doc.get("pickupLocation") != null){
+                                if (doc.get("pickupLocation") != null) {
                                     HashMap<String, Object> mapper = (HashMap<String, Object>) doc.get("pickupLocation");
                                     l = new Location(mapper.get("provider").toString());
                                     l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
                                     l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
                                 }
-                                if(isSearchResult && !doc.get("name").toString().toLowerCase().contains(searchQuery.toLowerCase())){
+                                if (isSearchResult && !doc.get("name").toString().toLowerCase().contains(searchQuery.toLowerCase())) {
                                     continue;
+                                }
+                                String category = "other";
+                                if (doc.containsKey("category")) {
+                                    category = doc.get("category").toString();
                                 }
 
                                 Item i = new Item(
@@ -114,8 +124,9 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         u,
                                         doc.get("description").toString(),
                                         d,
-                                        (List<String>)doc.get("stringsOfBitmapofPicuresOfItem"),
-                                        l
+                                        (List<String>) doc.get("stringsOfBitmapofPicuresOfItem"),
+                                        l,
+                                        category
                                 );
                                 itemsOnMarket.add(i);
                                 itemsOnMarketIds.add(document.getId());
@@ -159,23 +170,24 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class SliderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
         private SliderLayout mDemoSlider;
+
         SliderViewHolder(View v) {
             super(v);
             mDemoSlider = v.findViewById(R.id.slider);
 
 
-            HashMap<String,String> url_maps = new HashMap<String, String>();
+            HashMap<String, String> url_maps = new HashMap<String, String>();
             url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
             url_maps.put("Big Bang Theory", "http://tvfiles.alphacoders.com/100/hdclearart-10.png");
             url_maps.put("House of Cards", "http://cdn3.nflximg.net/images/3093/2043093.jpg");
             url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
 
-            HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
+            HashMap<String, Integer> file_maps = new HashMap<String, Integer>();
             file_maps.put("Nintendo Switch", R.drawable.foo);
             file_maps.put("Couch", R.drawable.couch);
             file_maps.put("CC meal swipe", R.drawable.cc);
 
-            for(String name : file_maps.keySet()){
+            for (String name : file_maps.keySet()) {
                 TextSliderView textSliderView = new TextSliderView(mContext);
                 // initialize a SliderLayout
                 textSliderView
@@ -187,7 +199,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 //add your extra information
                 textSliderView.bundle(new Bundle());
                 textSliderView.getBundle()
-                        .putString("extra",name);
+                        .putString("extra", name);
 
                 mDemoSlider.addSlider(textSliderView);
             }
@@ -212,7 +224,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public void onSliderClick(BaseSliderView slider) {
-            Toast.makeText(mContext,slider.getBundle().get("extra") + "",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -291,21 +303,22 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemsViewHolder) {
             final Item i = this.itemsOnMarket.get(position - (isSearchResult ? 0 : 1));
-            ((BuyViewAdapter.ItemsViewHolder)holder).name.setText(i.getName());
-            ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice());
-            ((BuyViewAdapter.ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
+            ((BuyViewAdapter.ItemsViewHolder) holder).name.setText(i.getName());
+            ((BuyViewAdapter.ItemsViewHolder) holder).price.setText("$" + i.getPrice());
+            ((BuyViewAdapter.ItemsViewHolder) holder).date.setText(i.getPostedTimeStamp().toString());
 
             //Extra zero if the price doesn't have one
-            if(((BuyViewAdapter.ItemsViewHolder)holder).price.getText().toString().split("\\.")[1].length() == 1){
-                ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice() + "0");
+            if (((BuyViewAdapter.ItemsViewHolder) holder).price.getText().toString().split("\\.")[1].length() == 1) {
+                ((BuyViewAdapter.ItemsViewHolder) holder).price.setText("$" + i.getPrice() + "0");
             }
 
             SingleShotLocationProvider.requestSingleUpdate(
                     mContext,
                     new SingleShotLocationProvider.LocationCallback() {
-                        @Override public void onNewLocationAvailable(Location location) {
+                        @Override
+                        public void onNewLocationAvailable(Location location) {
                             DecimalFormat df = new DecimalFormat("###.##");
-                            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(
+                            ((BuyViewAdapter.ItemsViewHolder) holder).pickupLocation.setText(
                                     i.getPickupLocation().getProvider() + ": " +
                                             df.format(location.distanceTo(i.getPickupLocation()) * 0.000621371)
                                             + " miles away"
@@ -314,7 +327,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     });
 //            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
-            if(i.getStringsOfBitmapofPicuresOfItem().isEmpty()) {
+            if (i.getStringsOfBitmapofPicuresOfItem().isEmpty()) {
                 final String docId = this.itemsOnMarketIds.get(position - (isSearchResult ? 0 : 1));
 
                 StorageReference storageRef = storage.getReference();
@@ -348,7 +361,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
 
                 Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-                ((BuyViewAdapter.ItemsViewHolder)holder).image.setImageBitmap(rotatedBitmap);
+                ((BuyViewAdapter.ItemsViewHolder) holder).image.setImageBitmap(rotatedBitmap);
             }
 
         }
@@ -371,9 +384,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // Close the file
             os.close();
             return localFile;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -382,7 +393,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return itemsOnMarket.size() + (isSearchResult ? 0 :  1);
+        return itemsOnMarket.size() + (isSearchResult ? 0 : 1);
     }
 
 

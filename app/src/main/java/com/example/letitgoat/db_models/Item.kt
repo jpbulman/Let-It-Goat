@@ -18,5 +18,6 @@ data class Item(
     val description: String,
     val postedTimeStamp: Date,
     val stringsOfBitmapofPicuresOfItem: List<String>,
-    val pickupLocation: Location
+    val pickupLocation: Location,
+    val category : String
 ) : Parcelable
