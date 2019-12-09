@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.letitgoat.db_models.Item
 import com.example.letitgoat.ui.sell.sell_recycler.SellViewAdapter
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 
 class ItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,12 +25,21 @@ class ItemActivity : AppCompatActivity() {
         val name = findViewById<TextView>(R.id.single_item_name)
         val price = findViewById<TextView>(R.id.single_item_price)
         val description = findViewById<TextView>(R.id.single_item_description)
+        val sellerName = findViewById<TextView>(R.id.sellerName)
 
-        name.setText(item.name)
-        price.setText("$" + item.price.toString())
+        name.text = item.name
+        price.text = "$" + item.price.toString()
+        sellerName.text = "Being sold by: " + item.user.name
+
+        if(price.text.toString().split(".")[1].length == 1){
+            price.text = price.text.toString() + "0"
+        }
+
         description.setText(item.description)
 
-        if(item.stringsOfBitmapofPicuresOfItem.size != 0) {
+        if(item.stringsOfBitmapofPicuresOfItem.isEmpty()) {
+
+        } else {
             val encodeByte: ByteArray = Base64.decode(
                 item.stringsOfBitmapofPicuresOfItem.get(0),
                 Base64.DEFAULT
