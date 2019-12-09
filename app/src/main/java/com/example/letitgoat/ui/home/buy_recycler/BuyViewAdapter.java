@@ -1,10 +1,13 @@
 package com.example.letitgoat.ui.home.buy_recycler;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -12,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,12 +36,20 @@ import com.example.letitgoat.db_models.Item;
 import com.example.letitgoat.db_models.User;
 import com.example.letitgoat.ui.sell.sell_recycler.SellViewAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,13 +61,17 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ItemClickListener mClickListener;
     private Context mContext;
     private List<Item> itemsOnMarket;
+    private List<String> itemsOnMarketIds;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+
 
     BuyViewAdapter(Context mContext) {
         this.mContext = mContext;
-
+        this.storage = FirebaseStorage.getInstance();
         this.db = FirebaseFirestore.getInstance();
         this.itemsOnMarket = new ArrayList<>();
+        this.itemsOnMarketIds = new ArrayList<>();
 
         db.collection("Items")
                 .get()
@@ -87,6 +104,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         l
                                 );
                                 itemsOnMarket.add(i);
+                                itemsOnMarketIds.add(document.getId());
                                 notifyDataSetChanged();
                             }
                         } else {
@@ -223,6 +241,38 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return viewHolder;
     }
 
+    private void updateListItem(int position, File video) {
+        RecyclerView view = ((Activity) mContext).findViewById(R.id.buy_recyclerview);
+        View v = view.getLayoutManager().findViewByPosition(position);
+
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
+                0,
+                0,
+                0
+        );
+
+        LinearLayout.LayoutParams videoParams = new LinearLayout.LayoutParams(
+                0,
+                500,
+                2
+        );
+        videoParams.leftMargin = 45;
+
+        ImageView imageView = v.findViewById(R.id.itemImage);
+        imageView.setLayoutParams(imageParams);
+
+        VideoView vid = v.findViewById(R.id.itemVideo);
+        vid.setVideoURI(Uri.fromFile(video));
+        vid.setLayoutParams(videoParams);
+        vid.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+        vid.start();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemsViewHolder) {
@@ -251,8 +301,30 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     });
 //            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
-            if(i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
+            if(i.getStringsOfBitmapofPicuresOfItem().isEmpty()) {
+                final String docId = this.itemsOnMarketIds.get(position - 1);
 
+                StorageReference storageRef = storage.getReference();
+
+                StorageReference pathReference = storageRef.child(docId + "/VideoFileName.mp4");
+
+                final long FIFTY_MEGABYTES = 1024 * 1024 * 50;
+                pathReference.getBytes(FIFTY_MEGABYTES).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        File downloaderFilee = writeByte(bytes, docId);
+//                    System.out.println(getFileSizeMegaBytes(downloaderFilee));
+//                    System.out.println(downloaderFilee.getName());
+                        updateListItem(position, downloaderFilee);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            } else {
                 byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
                 Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
 
@@ -267,6 +339,32 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
         }
+    }
+
+    private static File writeByte(byte[] bytes, String docId) {
+        File localFile = null;
+        try {
+            localFile = File.createTempFile(docId, ".mp4");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            OutputStream os = new FileOutputStream(localFile);
+
+            // Starts writing the bytes in it
+            os.write(bytes);
+//            System.out.println("Successfully" + " byte inserted");
+
+            // Close the file
+            os.close();
+            return localFile;
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return localFile;
     }
 
     @Override

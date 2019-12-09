@@ -62,7 +62,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<String> usersItemsOnMarketIds;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
-    private List<ItemsViewHolder> itemsViewHolders;
 
     SellViewAdapter(Context context) {
         this.mContext = context;
@@ -70,7 +69,6 @@ public class SellViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.usersItemsOnMarket = new ArrayList<>();
         this.usersItemsOnMarketIds = new ArrayList<>();
         this.storage = FirebaseStorage.getInstance();
-        this.itemsViewHolders = new ArrayList<>();
 
         db.collection("Items")
                 .get()

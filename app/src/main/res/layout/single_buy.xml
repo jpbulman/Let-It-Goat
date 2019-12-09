@@ -19,6 +19,14 @@
         android:layout_weight="2"
         app:srcCompat="@mipmap/ic_launcher" />
 
+    <VideoView
+        android:id="@+id/itemVideo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_weight="0"
+        app:srcCompat="@mipmap/ic_launcher" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
