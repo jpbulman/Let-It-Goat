@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.letitgoat.ItemActivity
 import com.example.letitgoat.R
 import com.example.letitgoat.db_models.Item
+import com.example.letitgoat.ui.search.SearchResultsActivity
 
 /**
  * A simple [Fragment] subclass.
@@ -60,7 +61,13 @@ class BuyRecyclerFragment : Fragment(),
         layoutManager = LinearLayoutManager(context)
         recyclerView?.layoutManager = layoutManager
         // specify an adapter (see also next example)
-        mAdapter = BuyViewAdapter(context)
+        if (activity is SearchResultsActivity){
+            val activity = activity as SearchResultsActivity
+            mAdapter = BuyViewAdapter(context, activity.searchQuery)
+        }
+        else {
+            mAdapter = BuyViewAdapter(context)
+        }
         mAdapter!!.setClickListener(this)
         recyclerView?.adapter = mAdapter
     }

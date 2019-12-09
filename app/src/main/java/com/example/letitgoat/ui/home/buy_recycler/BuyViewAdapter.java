@@ -46,6 +46,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,14 +67,22 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> itemsOnMarketIds;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
-
+    private boolean isSearchResult = false;
 
     BuyViewAdapter(Context mContext) {
-        this.mContext = mContext;
+        this(mContext, null);
+
+    }
+
+    public BuyViewAdapter(@Nullable Context context, final String searchQuery) {
+        this.mContext = context;
         this.storage = FirebaseStorage.getInstance();
         this.db = FirebaseFirestore.getInstance();
         this.itemsOnMarket = new ArrayList<>();
         this.itemsOnMarketIds = new ArrayList<>();
+        if (searchQuery != null) {
+            isSearchResult = true;
+        }
 
         db.collection("Items")
                 .get()
@@ -93,6 +104,10 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
                                     l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
                                 }
+                                if(isSearchResult && !doc.get("name").toString().toLowerCase().contains(searchQuery.toLowerCase())){
+                                    continue;
+                                }
+
                                 Item i = new Item(
                                         doc.get("name").toString(),
                                         Double.valueOf(doc.get("price").toString()),
@@ -137,7 +152,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void onClick(View view) {
             if (mClickListener != null) mClickListener.onItemClick(view,
                     getAdapterPosition(),
-                    itemsOnMarket.get(getAdapterPosition() - 1));
+                    itemsOnMarket.get(getAdapterPosition() - (isSearchResult ? 0 : 1)));
         }
     }
 
@@ -230,7 +245,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = null;
         RecyclerView.ViewHolder viewHolder = null;
-        if (viewType == 0) {
+        if (viewType == 0 && !isSearchResult) {
             view = inflater.inflate(R.layout.slider, parent, false);
             viewHolder = new SliderViewHolder(view);
         } else {
@@ -275,7 +290,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemsViewHolder) {
-            final Item i = this.itemsOnMarket.get(position - 1);
+            final Item i = this.itemsOnMarket.get(position - (isSearchResult ? 0 : 1));
             ((BuyViewAdapter.ItemsViewHolder)holder).name.setText(i.getName());
             ((BuyViewAdapter.ItemsViewHolder)holder).price.setText("$" + i.getPrice());
             ((BuyViewAdapter.ItemsViewHolder)holder).date.setText(i.getPostedTimeStamp().toString());
@@ -300,7 +315,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //            ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(i.getPickupLocation().getProvider());
 
             if(i.getStringsOfBitmapofPicuresOfItem().isEmpty()) {
-                final String docId = this.itemsOnMarketIds.get(position - 1);
+                final String docId = this.itemsOnMarketIds.get(position - (isSearchResult ? 0 : 1));
 
                 StorageReference storageRef = storage.getReference();
 
@@ -367,7 +382,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return itemsOnMarket.size() + 1;
+        return itemsOnMarket.size() + (isSearchResult ? 0 :  1);
     }
 
 
