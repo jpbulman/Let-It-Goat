@@ -119,12 +119,6 @@ class MainActivity : AppCompatActivity() {
                 val i = Intent(this@MainActivity, Home::class.java)
                 startActivity(i)
             } else {
-//                println(json["auth"])
-                //Username or password is wrong - needs to be fixed
-//                toast("Incorrect username or password")
-//                val t = Toast.makeText(this@MainActivity,"asdf", Toast.LENGTH_LONG)
-//                println("111111111111")
-//                t.show()
                 Log.e("","User authentication failed")
             }
         }

@@ -83,7 +83,6 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
-                                System.out.println(doc.get("postedTimeStamp").toString());
                                 Date d = ((Timestamp)doc.get("postedTimeStamp")).toDate();
                                 Log.d("check_buy_item", doc.get("name").toString());
                                 WPILocationHelper wpiLocationHelper = new WPILocationHelper();
@@ -291,7 +290,6 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     new SingleShotLocationProvider.LocationCallback() {
                         @Override public void onNewLocationAvailable(Location location) {
                             DecimalFormat df = new DecimalFormat("###.##");
-                            System.out.println(i.getName());
                             ((BuyViewAdapter.ItemsViewHolder)holder).pickupLocation.setText(
                                     i.getPickupLocation().getProvider() + ": " +
                                             df.format(location.distanceTo(i.getPickupLocation()) * 0.000621371)
