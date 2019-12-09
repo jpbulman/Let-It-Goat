@@ -9,6 +9,7 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -48,6 +48,7 @@ import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -139,108 +140,28 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 });
     }
 
-    // Provide a reference to the views for each data single_buy
-    // Complex data items may need more than one view per single_buy, and
-    // you provide access to all the views for a data single_buy in a view holder
-    public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private ImageView image;
-        private TextView name;
-        private TextView price;
-        private TextView date;
-        private TextView pickupLocation;
+    private static File writeByte(byte[] bytes, String docId) {
+        File localFile = null;
+        try {
+            localFile = File.createTempFile(docId, ".mp4");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            OutputStream os = new FileOutputStream(localFile);
 
-        ItemsViewHolder(View v) {
-            super(v);
-            image = v.findViewById(R.id.itemImage);
-            name = v.findViewById(R.id.name);
-            price = v.findViewById(R.id.price);
-            date = v.findViewById(R.id.date);
-            pickupLocation = v.findViewById(R.id.location);
-            v.setOnClickListener(this);
+            // Starts writing the bytes in it
+            os.write(bytes);
+//            System.out.println("Successfully" + " byte inserted");
+
+            // Close the file
+            os.close();
+            return localFile;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view,
-                    getAdapterPosition(),
-                    itemsOnMarket.get(getAdapterPosition() - (isSearchResult ? 0 : 1)));
-        }
-    }
-
-    public class SliderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-            BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
-        private SliderLayout mDemoSlider;
-
-        SliderViewHolder(View v) {
-            super(v);
-            mDemoSlider = v.findViewById(R.id.slider);
-
-
-            HashMap<String, String> url_maps = new HashMap<String, String>();
-            url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
-            url_maps.put("Big Bang Theory", "http://tvfiles.alphacoders.com/100/hdclearart-10.png");
-            url_maps.put("House of Cards", "http://cdn3.nflximg.net/images/3093/2043093.jpg");
-            url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
-
-            HashMap<String, Integer> file_maps = new HashMap<String, Integer>();
-            file_maps.put("Nintendo Switch", R.drawable.foo);
-            file_maps.put("Couch", R.drawable.couch);
-            file_maps.put("CC meal swipe", R.drawable.cc);
-
-            for (String name : file_maps.keySet()) {
-                TextSliderView textSliderView = new TextSliderView(mContext);
-                // initialize a SliderLayout
-                textSliderView
-                        .description(name)
-                        .image(file_maps.get(name))
-                        .setScaleType(BaseSliderView.ScaleType.Fit)
-                        .setOnSliderClickListener(this);
-
-                //add your extra information
-                textSliderView.bundle(new Bundle());
-                textSliderView.getBundle()
-                        .putString("extra", name);
-
-                mDemoSlider.addSlider(textSliderView);
-            }
-            mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Tablet);
-            mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-            mDemoSlider.setCustomAnimation(new DescriptionAnimation());
-            mDemoSlider.startAutoCycle(5000, 5000, true);
-            mDemoSlider.addOnPageChangeListener(this);
-            mDemoSlider.stopAutoCycle();
-
-            v.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) {
-                mClickListener.onItemClick(view,
-                        getAdapterPosition(),
-                        itemsOnMarket.get(getAdapterPosition()));
-            }
-        }
-
-        @Override
-        public void onSliderClick(BaseSliderView slider) {
-            Toast.makeText(mContext, slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
-        }
+        return localFile;
     }
 
     @Override
@@ -301,6 +222,8 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        if (this.itemsOnMarket.size() == 0) return;
+
         if (holder instanceof ItemsViewHolder) {
             final Item i = this.itemsOnMarket.get(position - (isSearchResult ? 0 : 1));
             ((BuyViewAdapter.ItemsViewHolder) holder).name.setText(i.getName());
@@ -351,44 +274,69 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 });
             } else {
-                byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
-                Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
 
-                Matrix matrix = new Matrix();
+                if (i.getStringsOfBitmapofPicuresOfItem().size() != 0) {
+                    byte[] encodeByte = Base64.decode(i.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
+                    Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                    Matrix matrix = new Matrix();
 
-                matrix.postRotate(90);
+                    matrix.postRotate(90);
 
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
 
-                Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-                ((BuyViewAdapter.ItemsViewHolder) holder).image.setImageBitmap(rotatedBitmap);
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+                    ((BuyViewAdapter.ItemsViewHolder) holder).image.setImageBitmap(rotatedBitmap);
+                }
+            }
+        } else {
+            if (((SliderViewHolder) holder).isInitialized) return;
+            SliderLayout mDemoSlider = ((SliderViewHolder) holder).mDemoSlider;
+            HashMap<String, Bitmap> file_maps = new HashMap<>();
+            for (int j = 0; j < this.itemsOnMarket.size() / 2 + 1; j++) {
+                Item item = this.itemsOnMarket.get(j);
+                if (item.getStringsOfBitmapofPicuresOfItem().size() != 0) {
+                    byte[] encodeByte = Base64.decode(item.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
+                    Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+
+                    Matrix matrix = new Matrix();
+
+                    matrix.postRotate(90);
+
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(b, b.getWidth(), b.getHeight(), true);
+
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                    file_maps.put(item.getName(), rotatedBitmap);
+                } else {
+                    file_maps.put(item.getName(), null);
+                }
             }
 
+            for (String name : file_maps.keySet()) {
+                TextSliderView textSliderView = new TextSliderView(mContext);
+                // initialize a SliderLayout
+                textSliderView
+                        .description(name)
+                        .image(file_maps.get(name))
+                        .setScaleType(BaseSliderView.ScaleType.Fit)
+                        .setOnSliderClickListener(((SliderViewHolder) holder));
+
+                //add your extra information
+                textSliderView.bundle(new Bundle());
+                textSliderView.getBundle()
+                        .putString("extra", name);
+
+                mDemoSlider.addSlider(textSliderView);
+            }
+            mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Tablet);
+            mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+            mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+            mDemoSlider.startAutoCycle(5000, 5000, true);
+            mDemoSlider.addOnPageChangeListener(((SliderViewHolder) holder));
+//            mDemoSlider.stopAutoCycle();
+
+            ((SliderViewHolder) holder).isInitialized = true;
         }
-    }
-
-    private static File writeByte(byte[] bytes, String docId) {
-        File localFile = null;
-        try {
-            localFile = File.createTempFile(docId, ".mp4");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            OutputStream os = new FileOutputStream(localFile);
-
-            // Starts writing the bytes in it
-            os.write(bytes);
-//            System.out.println("Successfully" + " byte inserted");
-
-            // Close the file
-            os.close();
-            return localFile;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return localFile;
     }
 
     @Override
@@ -396,14 +344,89 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return itemsOnMarket.size() + (isSearchResult ? 0 : 1);
     }
 
-
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
+    private Uri getImageUri(Context context, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position, Item item);
+    }
+
+    // Provide a reference to the views for each data single_buy
+    // Complex data items may need more than one view per single_buy, and
+    // you provide access to all the views for a data single_buy in a view holder
+    public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView image;
+        private TextView name;
+        private TextView price;
+        private TextView date;
+        private TextView pickupLocation;
+
+        ItemsViewHolder(View v) {
+            super(v);
+            image = v.findViewById(R.id.itemImage);
+            name = v.findViewById(R.id.name);
+            price = v.findViewById(R.id.price);
+            date = v.findViewById(R.id.date);
+            pickupLocation = v.findViewById(R.id.location);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view,
+                    getAdapterPosition(),
+                    itemsOnMarket.get(getAdapterPosition() - (isSearchResult ? 0 : 1)));
+        }
+    }
+
+    public class SliderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+        private SliderLayout mDemoSlider;
+        private boolean isInitialized = false;
+
+        SliderViewHolder(View v) {
+            super(v);
+            mDemoSlider = v.findViewById(R.id.slider);
+
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+
+        }
+
+        @Override
+        public void onSliderClick(BaseSliderView slider) {
+            mClickListener.onItemClick(null,
+                    getAdapterPosition(),
+                    null);
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
     }
 }
