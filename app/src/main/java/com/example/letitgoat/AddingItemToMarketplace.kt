@@ -25,6 +25,7 @@ import android.view.ViewTreeObserver
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import com.google.android.gms.location.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
@@ -406,14 +407,18 @@ class AddingItemToMarketplace : AppCompatActivity() {
                     activityRootView.getRootView().getHeight() - activityRootView.getHeight()
                 Log.d("ItemActivity", "" + heightDiff)
                 if (heightDiff > 500) { // 99% of the time the height diff will be due to a keyboard.
-                    if (!isOpened) { //Do two things, make the view top visible and the editText smaller
+                    if (!isOpened) {
                         addButton.visibility = View.INVISIBLE
                         deleteButton.visibility = View.INVISIBLE
                     }
                     isOpened = true
                 } else if (isOpened) {
                     addButton.visibility = View.VISIBLE
-                    deleteButton.visibility = View.VISIBLE
+                    if (!deleteButton.isVisible) {
+                        deleteButton.visibility = View.INVISIBLE
+                    } else {
+                        deleteButton.visibility = View.VISIBLE
+                    }
                     isOpened = false
                 }
             })
