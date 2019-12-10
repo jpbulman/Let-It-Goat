@@ -33,6 +33,7 @@ import com.example.letitgoat.SingleShotLocationProvider;
 import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.Item;
 import com.example.letitgoat.db_models.User;
+import com.example.letitgoat.ui.search.SearchResultsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,14 +70,15 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private boolean isSearchResult = false;
+    private Activity searchActivity = null;
 
     BuyViewAdapter(Context mContext, String category) {
-        this(mContext, category, null);
-
+        this(mContext, category, null, null);
     }
 
-    public BuyViewAdapter(@Nullable Context context, String category, final String searchQuery) {
+    public BuyViewAdapter(@Nullable final Context context, String category, final String searchQuery, final Activity searchActivity) {
         this.mContext = context;
+        this.searchActivity = searchActivity;
         this.storage = FirebaseStorage.getInstance();
         this.db = FirebaseFirestore.getInstance();
         this.itemsOnMarket = new ArrayList<>();
@@ -130,10 +132,17 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         l,
                                         category
                                 );
+
                                 itemsOnMarket.add(i);
                                 itemsOnMarketIds.add(document.getId());
                                 notifyDataSetChanged();
                             }
+                            if (searchActivity != null){
+                                SearchResultsActivity activity = (SearchResultsActivity) searchActivity;
+                                activity.setNumItems(itemsOnMarket.size());
+                                activity.runCallback("numItems");
+                            }
+
                         } else {
                             System.out.println("Could not get the user's items for selling from the DB");
                         }
@@ -192,6 +201,10 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void updateListItem(int position, File video) {
         RecyclerView view = ((Activity) mContext).findViewById(R.id.buy_recyclerview);
         View v = view.getLayoutManager().findViewByPosition(position);
+
+        if(v == null) {
+            return;
+        }
 
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
                 0,
@@ -377,7 +390,6 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return itemsOnMarket.size() + (isSearchResult ? 0 : 1);
     }
 
-    // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }

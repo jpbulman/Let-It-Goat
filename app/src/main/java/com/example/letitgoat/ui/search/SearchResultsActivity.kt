@@ -9,7 +9,9 @@ import com.example.letitgoat.R
 import com.example.letitgoat.ui.home.buy_recycler.BuyRecyclerFragment
 
 class SearchResultsActivity : AppCompatActivity() {
+    var numItems = 0
     var searchQuery = ""
+    var numItemsCallback : (Int)->Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,5 +32,11 @@ class SearchResultsActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
+    }
+
+    fun runCallback(numItems: String) {
+        if(numItems == "numItems"){
+            numItemsCallback(this.numItems)
+        }
     }
 }

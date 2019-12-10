@@ -25,11 +25,20 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
     private var root: View? = null
     private var menu: Menu? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        var activity = (activity as SearchResultsActivity)
+        activity.numItemsCallback = {x : Int ->
+            var y = x.toString()
+            var resultsText = view?.findViewById<TextView>(R.id.num_results2)
+            resultsText?.text = "$y Results for ${activity.searchQuery}"
+        }
+
+
 
         homeViewModel =
             ViewModelProviders.of(this).get(HomeViewModel::class.java)
@@ -38,21 +47,20 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
 
         setHasOptionsMenu(true)
 
-
         return root
     }
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         var resultsText = view?.findViewById<TextView>(R.id.num_results2)
-
         var activity = (activity as SearchResultsActivity)
-        resultsText?.text = "? Results for ${activity.searchQuery}"
+        resultsText?.text = "${activity.numItems} Results for ${activity.searchQuery}"
+
+        super.onViewCreated(view, savedInstanceState)
+
 
      //   var a = BuyRecyclerFragment.newInstance("Search Results")
 
-        super.onViewCreated(view, savedInstanceState)
     }
 
 
@@ -74,7 +82,6 @@ class SearchResultsFragment : Fragment(), SliderFragment.OnFragmentInteractionLi
     }
 
     override fun onFragmentInteraction(uri: Uri?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
