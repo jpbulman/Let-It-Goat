@@ -1,92 +1,97 @@
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_weight="6">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/single_item_img"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="6"
-            android:src="@drawable/wpi" />
+        android:layout_height="match_parent"
+        android:layout_weight="6">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/single_item_name"
+            <ImageView
+                android:id="@+id/single_item_img"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="6"
+                android:src="@drawable/wpi" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/wpi_s_quad_seal"
-                android:textColor="#000000"
-                android:textSize="30sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/single_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/wpi_s_quad_seal"
+                    android:textColor="#000000"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/sellerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Being sold by: JP Bulman"
+                    android:textColor="#000000"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/single_item_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingTop="30dp"
+                    android:text="$100.20"
+                    android:textColor="#000000"
+                    android:textSize="30sp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="#918C8C" />
 
             <TextView
-                android:id="@+id/sellerName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Being sold by: JP Bulman"
-                android:textColor="#000000"
-                android:textSize="15sp" />
+                android:text="Overview"
+                android:layout_marginLeft="5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="24sp"/>
 
             <TextView
-                android:id="@+id/single_item_price"
+                android:id="@+id/single_item_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="30dp"
-                android:text="$100.20"
-                android:textColor="#000000"
-                android:textSize="30sp" />
+                android:paddingStart="20sp"
+                android:paddingTop="20sp"
+                android:paddingBottom="20sp"
+                android:text="@string/df"
+                android:textColor="#000000" />
 
         </LinearLayout>
+    </ScrollView>
 
-        <TextView
-            android:id="@+id/single_item_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="20sp"
-            android:paddingTop="20sp"
-            android:paddingBottom="20sp"
-            android:text="@string/df"
-            android:textColor="#000000" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="47.5"
-                android:background="#3FB93F"
-                android:text="Message seller 💬"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
-                android:layout_weight="47.5"
-                android:background="#007bff"
-                android:text="Buy item 💲 "
-                android:textColor="#FFFFFF" />
-
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="47.5"
+        android:background="#3FB93F"
+        android:text="Message seller 💬"
+        android:textColor="#FFFFFF" />
+</FrameLayout>
