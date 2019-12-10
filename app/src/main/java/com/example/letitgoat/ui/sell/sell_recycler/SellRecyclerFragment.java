@@ -1,5 +1,6 @@
 package com.example.letitgoat.ui.sell.sell_recycler;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -99,7 +100,6 @@ public class SellRecyclerFragment extends Fragment implements SellViewAdapter.It
         mAdapter = new SellViewAdapter(getContext());
         mAdapter.setClickListener(this);
         recyclerView.setAdapter(mAdapter);
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -142,12 +142,14 @@ public class SellRecyclerFragment extends Fragment implements SellViewAdapter.It
     }
 
     @Override
-    public void onItemClick(View view, int position, Item item) {
+    public void onItemClick(View view, int position, Item item, String id) {
 //        mAdapter.getItem(position);
         Log.d("SellItemsFragment", item.getName());
         Intent intent = new Intent(getContext(), AddingItemToMarketplace.class);
         intent.putExtra("extra_item", item);
+        intent.putExtra("id", id);
         startActivity(intent);
 //        Toast.makeText(getContext(), "You clicked " + position, Toast.LENGTH_SHORT).show();
     }
+
 }

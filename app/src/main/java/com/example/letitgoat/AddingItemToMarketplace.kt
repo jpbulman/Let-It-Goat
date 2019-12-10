@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Matrix
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -34,6 +35,9 @@ import android.os.Looper
 import android.os.StrictMode
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import android.view.ViewTreeObserver
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -43,10 +47,11 @@ import com.google.android.gms.location.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
 import java.io.File
+import kotlin.concurrent.thread
 
 
 class AddingItemToMarketplace : AppCompatActivity() {
-
+    var isOpened = false
     private lateinit var database: FirebaseFirestore
     private var stringsOfBitmapsOfItems: List<String> = ArrayList()
     private var videoFile: File = File("")
@@ -56,15 +61,34 @@ class AddingItemToMarketplace : AppCompatActivity() {
 
     private var hasTakenVideo = false
 
+    lateinit var img: ImageView
+    lateinit var name: TextView
+    lateinit var price: TextView
+    lateinit var description: TextView
+    lateinit var addButton: Button
+    lateinit var deleteButton: Button
+
+    lateinit var itemID: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding_item_to_marketplace)
 
-        Log.d("check_add_item", (intent.getSerializableExtra("extra_item")==null).toString())
+        img = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
+        name = findViewById<TextView>(R.id.itemNameField)
+        price = findViewById<TextView>(R.id.priceField)
+        description = findViewById<TextView>(R.id.descriptionField)
+        addButton = findViewById<Button>(R.id.addToMarketPlaceButton)
+        deleteButton = findViewById<Button>(R.id.deleteFromMarketPlaceButton)
 
-        if (intent.getSerializableExtra("extra_item")!=null) {
-            val item = intent.getSerializableExtra("extra_item") as Item
+        setListnerToRootView()
+
+        if (intent.getParcelableExtra<Item>("extra_item") != null) {
+            addButton.text = "Update Item On Marketplace"
+
+            val item = intent.getParcelableExtra("extra_item") as Item
             Log.d("ItemActivity", item.name)
+            itemID = intent.getStringExtra("id")
 
             val img = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
             val name = findViewById<TextView>(R.id.itemNameField)
@@ -72,36 +96,65 @@ class AddingItemToMarketplace : AppCompatActivity() {
             val description = findViewById<TextView>(R.id.descriptionField)
 
             name.setText(item.name)
+            name.isFocusable = false
+            name.setOnClickListener{
+                Toast.makeText(applicationContext,"You can not modify item name...",Toast.LENGTH_SHORT).show()
+            }
             price.setText(item.price.toString())
             description.setText(item.description)
 
-            val encodeByte: ByteArray = Base64.decode(
-                item.stringsOfBitmapofPicuresOfItem.get(0),
-                Base64.DEFAULT
-            )
-            val b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+            addButton.setOnClickListener{
+                updateItemToMarketplace()
+            }
 
-            val matrix = Matrix()
+            deleteButton.setOnClickListener{
+                deleteItemToMarketplace(item.name)
+            }
 
-            matrix.postRotate(90f)
+            if (item.stringsOfBitmapofPicuresOfItem.size != 0) {
+                val encodeByte: ByteArray = Base64.decode(
+                    item.stringsOfBitmapofPicuresOfItem.get(0),
+                    Base64.DEFAULT
+                )
+                val b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
 
-            val scaledBitmap = Bitmap.createScaledBitmap(b, b.width, b.height, true)
+                val matrix = Matrix()
 
-            val rotatedBitmap = Bitmap.createBitmap(
-                scaledBitmap,
-                0,
-                0,
-                scaledBitmap.width,
-                scaledBitmap.height,
-                matrix,
-                true
-            )
+                matrix.postRotate(90f)
 
-            img.setImageBitmap(
-                rotatedBitmap
-            )
+                val scaledBitmap = Bitmap.createScaledBitmap(b, b.width, b.height, true)
+
+                val rotatedBitmap = Bitmap.createBitmap(
+                    scaledBitmap,
+                    0,
+                    0,
+                    scaledBitmap.width,
+                    scaledBitmap.height,
+                    matrix,
+                    true
+                )
+
+                img.setImageBitmap(
+                    rotatedBitmap
+                )
+
+                thread {
+                    val baos = ByteArrayOutputStream()
+                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                    val b = baos.toByteArray()
+                    val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
+                    this.stringsOfBitmapsOfItems += bitmapAsString }
+
+            }
+        } else {
+            deleteButton.visibility = View.INVISIBLE
+            addButton.setOnClickListener{
+                addItemToMarketplace()
+            }
+
+            val sellerName = findViewById<TextView>(R.id.sellerName)
+            sellerName.text = "Being sold by: ${MainActivity.user.name}"
         }
-
 
         database = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
@@ -119,19 +172,6 @@ class AddingItemToMarketplace : AppCompatActivity() {
             spinner_categories.adapter = adapter
         }
 
-        val addingItemToMarketplace = findViewById<Button>(R.id.addToMarketPlaceButton)
-        addingItemToMarketplace.setOnClickListener{
-            addItemToMarketplace()
-        }
-
-        val sellerName = findViewById<TextView>(R.id.sellerName)
-        sellerName.text = "Being sold by: ${MainActivity.user.name}"
-
-        val takePhotoButton = findViewById<ImageButton>(R.id.newItemPictureButton)
-        takePhotoButton.setOnClickListener{
-            dispatchTakePictureIntent()
-        }
-
         val locationHelper = WPILocationHelper()
         val spinner = findViewById<Spinner>(R.id.pickupLocationSpinner)
         val locationSpinnerAdapter = ArrayAdapter(
@@ -140,6 +180,11 @@ class AddingItemToMarketplace : AppCompatActivity() {
             locationHelper.listOfLocationAsStrings
         )
         spinner.adapter = locationSpinnerAdapter
+
+        val takePhotoButton = findViewById<ImageButton>(R.id.newItemPictureButton)
+        takePhotoButton.setOnClickListener{
+            dispatchTakePictureIntent()
+        }
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -286,8 +331,109 @@ class AddingItemToMarketplace : AppCompatActivity() {
             }
 
             startActivity(Intent(this, Home::class.java))
+            Toast.makeText(applicationContext,"You have created the item: " + name,Toast.LENGTH_LONG).show()
         } else {
             toast("One or more of the fields is/are invalid")
         }
+    }
+
+    private fun updateItemToMarketplace(){
+        var validInput = true
+
+        val name = findViewById<EditText>(R.id.itemNameField).text.toString()
+        var price = -1.0
+
+        try {
+            price = findViewById<EditText>(R.id.priceField).text.toString().toDouble()
+        } catch (e: NumberFormatException){
+            validInput = false
+        }
+
+        val user = MainActivity.user
+        val description = findViewById<EditText>(R.id.descriptionField).text.toString()
+        val currTime = Date()
+        val category = findViewById<Spinner>(R.id.spinner_categories)
+
+        if(name == "" || description == ""){
+            validInput = false
+        }
+
+        val wpiLocationHelper = WPILocationHelper()
+        var pickupLocation = wpiLocationHelper.locationNameToLocationObjectMap[pickupLocationSpinner.selectedItem.toString()]
+        if(pickupLocation == null){
+            pickupLocation = wpiLocationHelper.getLocationOfGordonLibrary()
+        }
+
+        val item = Item(
+            name = name,
+            price = price,
+            user = user,
+            description = description,
+            postedTimeStamp = currTime,
+            stringsOfBitmapofPicuresOfItem = this.stringsOfBitmapsOfItems,
+            pickupLocation = pickupLocation,
+            category = category.selectedItem.toString()
+        )
+
+        //Adds single_buy to db
+        if (validInput) {
+            database.collection("Items").document(itemID).set(item)
+            startActivity(Intent(this, Home::class.java))
+            Toast.makeText(applicationContext,"You have updated the item: " + name,Toast.LENGTH_LONG).show()
+        } else {
+            toast("One or more of the fields is/are invalid")
+        }
+    }
+
+    private fun deleteItemToMarketplace(itemName: String){
+        val builder = AlertDialog.Builder(this)
+
+        // Set the alert dialog title
+        builder.setTitle("Warning")
+
+        // Display a message on alert dialog
+        builder.setMessage("Do you want to delete the item?")
+
+        // Set a positive button and its click listener on alert dialog
+        builder.setPositiveButton("YES"){dialog, which ->
+            // Do something when user press the positive button
+            database.collection("Items").document(itemID).delete()
+            startActivity(Intent(this, Home::class.java))
+            Toast.makeText(applicationContext,"You have deleted the item: " + itemName,Toast.LENGTH_LONG).show()
+        }
+
+        // Display a negative button on alert dialog
+        builder.setNegativeButton("No"){dialog,which ->
+            dialog.dismiss()
+        }
+
+        // Finally, make the alert dialog using builder
+        val dialog: AlertDialog = builder.create()
+
+        // Display the alert dialog on app interface
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.DKGRAY)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLUE)
+    }
+
+    fun setListnerToRootView() {
+        val activityRootView: View = window.decorView.findViewById(android.R.id.content)
+        activityRootView.getViewTreeObserver()
+            .addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener {
+                val heightDiff: Int =
+                    activityRootView.getRootView().getHeight() - activityRootView.getHeight()
+                Log.d("ItemActivity", "" + heightDiff)
+                if (heightDiff > 500) { // 99% of the time the height diff will be due to a keyboard.
+                    if (!isOpened) { //Do two things, make the view top visible and the editText smaller
+                        addButton.visibility = View.INVISIBLE
+                        deleteButton.visibility = View.INVISIBLE
+                    }
+                    isOpened = true
+                } else if (isOpened) {
+                    addButton.visibility = View.VISIBLE
+                    deleteButton.visibility = View.VISIBLE
+                    isOpened = false
+                }
+            })
     }
 }
