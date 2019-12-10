@@ -24,4 +24,6 @@
     </string-array>
     <string name="put_item_on_wpi_marketplace">Put item on market</string>
     <string name="description_of_your_product">Description of your product</string>
+    <string name="name">Name:</string>
+    <string name="being_sold_by">Being sold by:</string>
 </resources>
