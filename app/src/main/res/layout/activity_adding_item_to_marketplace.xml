@@ -92,7 +92,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
                             android:layout_weight="3"
-                            android:text="Name:"
+                            android:text="@string/name"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textSize="24sp" />
 
@@ -125,20 +125,19 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="5"
-                            android:text="Being sold by:"
+                            android:text="@string/being_sold_by"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textSize="24sp" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/sellerName"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="5"
                             android:background="@android:color/transparent"
-                            android:cursorVisible="true"
-                            android:text=" JP Bulman"
+                            android:text="Username"
                             android:textColor="#000000"
                             android:textSize="15sp" />
                     </LinearLayout>
@@ -158,7 +157,7 @@
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="3"
                             android:text="Price:"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -273,31 +272,33 @@
                 android:textColor="#000000"
                 android:textCursorDrawable="@null" />
 
+            <Button
+                android:id="@+id/deleteFromMarketPlaceButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="40dp"
+                android:background="#d9534f"
+                android:textColor="@color/white"
+                android:text="Delete from WPI marketplace" />
 
         </LinearLayout>
     </ScrollView>
 
     <Button
-        android:id="@+id/deleteFromMarketPlaceButton"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="40dp"
-        android:background="#D40000"
-        android:text="Delete it from WPI marketplace" />
-
-    <Button
         android:id="@+id/addToMarketPlaceButton"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="50dp"
         android:layout_gravity="bottom"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:background="#00BCD4"
+        android:textColor="#ffffff"
+        android:background="#0275d8"
         android:text="@string/put_item_on_wpi_marketplace" />
+
 </FrameLayout>

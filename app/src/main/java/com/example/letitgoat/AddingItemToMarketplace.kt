@@ -1,10 +1,7 @@
 package com.example.letitgoat
 
-import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -21,28 +18,13 @@ import java.io.ByteArrayOutputStream
 import java.lang.NumberFormatException
 import java.util.*
 import kotlin.collections.ArrayList
-import android.location.Location
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.location.LocationListener
-import android.location.LocationManager
-import android.media.Image
-import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Environment
-import android.os.Looper
-import android.os.StrictMode
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.core.view.marginBottom
 import com.google.android.gms.location.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_adding_item_to_marketplace.*
@@ -153,13 +135,13 @@ class AddingItemToMarketplace : AppCompatActivity() {
             }
 
             val sellerName = findViewById<TextView>(R.id.sellerName)
-            sellerName.text = "Being sold by: ${MainActivity.user.name}"
+            sellerName.text = "${MainActivity.user.name}"
         }
 
         database = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
-        val spinner_categories: Spinner = findViewById(R.id.spinner_categories)
+        val spinnercategories: Spinner = findViewById(R.id.spinner_categories)
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter.createFromResource(
             this,
@@ -169,7 +151,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             // Apply the adapter to the spinner
-            spinner_categories.adapter = adapter
+            spinnercategories.adapter = adapter
         }
 
         val locationHelper = WPILocationHelper()

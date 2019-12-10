@@ -273,7 +273,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (i.getStringsOfBitmapofPicuresOfItem().isEmpty()) {
                 final String docId = this.itemsOnMarketIds.get(position - (isSearchResult ? 0 : 1));
-
+                System.out.println("Video DOCID: " + docId);
                 StorageReference storageRef = storage.getReference();
 
                 StorageReference pathReference = storageRef.child(docId + "/VideoFileName.mp4");
