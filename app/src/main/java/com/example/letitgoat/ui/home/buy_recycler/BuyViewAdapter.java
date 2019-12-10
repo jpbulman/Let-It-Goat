@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ItemClickListener mClickListener;
@@ -220,6 +221,26 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         vid.start();
     }
 
+    public static <T> List<T> getRandomSubList(List<T> input, int subsetSize)
+    {
+        Random r = new Random();
+        int inputSize = input.size();
+
+        if(inputSize < subsetSize){
+            subsetSize = inputSize;
+        }
+
+        for (int i = 0; i < subsetSize; i++)
+        {
+
+            int indexToSwap = i + r.nextInt(inputSize - i);
+            T temp = input.get(i);
+           input.set(i, input.get(indexToSwap));
+            input.set(indexToSwap, temp);
+        }
+        return input.subList(0, subsetSize);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (this.itemsOnMarket.size() == 0) return;
@@ -292,8 +313,11 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (((SliderViewHolder) holder).isInitialized) return;
             SliderLayout mDemoSlider = ((SliderViewHolder) holder).mDemoSlider;
             HashMap<String, Bitmap> file_maps = new HashMap<>();
-            for (int j = 0; j < this.itemsOnMarket.size() / 2 + 1; j++) {
-                Item item = this.itemsOnMarket.get(j);
+            HashMap<String, Item> item_map = new HashMap<>();
+
+            List<Item> carouselItems = getRandomSubList(itemsOnMarket, 4);
+            for (int j = 0; j < carouselItems.size(); j++) {
+                Item item = carouselItems.get(j);
                 if (item.getStringsOfBitmapofPicuresOfItem().size() != 0) {
                     byte[] encodeByte = Base64.decode(item.getStringsOfBitmapofPicuresOfItem().get(0), Base64.DEFAULT);
                     Bitmap b = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
@@ -307,6 +331,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
                     file_maps.put(item.getName(), rotatedBitmap);
+                    item_map.put(item.getName(), item);
                 } else {
                     file_maps.put(item.getName(), null);
                 }
@@ -325,6 +350,14 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 textSliderView.bundle(new Bundle());
                 textSliderView.getBundle()
                         .putString("extra", name);
+
+                Item referencedItem = item_map.get(name);
+
+                textSliderView.getBundle()
+                        .putString("extra", name);
+                textSliderView.getBundle()
+                        .putParcelable("item", referencedItem);
+
 
                 mDemoSlider.addSlider(textSliderView);
             }
@@ -348,14 +381,6 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
-
-    private Uri getImageUri(Context context, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
-
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
@@ -411,7 +436,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public void onSliderClick(BaseSliderView slider) {
             mClickListener.onItemClick(null,
                     getAdapterPosition(),
-                    null);
+                    (Item) slider.getBundle().get("item"));
         }
 
         @Override

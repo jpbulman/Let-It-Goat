@@ -99,9 +99,9 @@ class BuyRecyclerFragment : Fragment(),
     }
 
     override fun onItemClick(
-        view: View,
+        view: View?,
         position: Int,
-        item: Item
+        item: Item?
     ) {
         Log.d("ItemsFragment", position.toString() + "")
         val intent = Intent(context, ItemActivity::class.java)
