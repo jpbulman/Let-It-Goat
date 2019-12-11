@@ -16,13 +16,18 @@ import org.jetbrains.anko.doAsync
 import android.graphics.Bitmap
 import android.util.Base64
 import android.view.View
+import android.widget.Toast
+import com.example.letitgoat.ui.CustomProgressBar
+import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.runOnUiThread
 import java.io.ByteArrayOutputStream
 
 
 class MainActivity : AppCompatActivity() {
-
+    val progressBar = CustomProgressBar()
     private lateinit var database: FirebaseFirestore
     private lateinit var context: Context
+    private lateinit var loginButton: Button
 
     //User object - just whoever logs into the app
     //Can be referenced anywhere in the app after the user logs in to see who is logged in
@@ -58,13 +63,15 @@ class MainActivity : AppCompatActivity() {
 
         database = FirebaseFirestore.getInstance()
 
-        val loginButton = findViewById<Button>(R.id.loginButton)
+        loginButton = findViewById<Button>(R.id.loginButton)
         loginButton.setOnClickListener {
+            loginButton.isClickable = false
             login()
         }
     }
 
     fun login(){
+        progressBar.show(this,"Please Wait...")
         val unameField = findViewById<EditText>(R.id.usernameField)
         val pwdField = findViewById<EditText>(R.id.passwordField)
 
@@ -77,7 +84,14 @@ class MainActivity : AppCompatActivity() {
                 listOf("username" to username, "password" to pwdField.text.toString()))
                 .responseString()
 
-
+            if (response.statusCode != 200) {
+                loginButton.isClickable = true
+                progressBar.dialog.dismiss()
+                runOnUiThread{
+                    makeToast("Server error...")
+                }
+                return@doAsync
+            }
             /*
                 Convert the login response to a JSON
                 See https://github.com/jpbulman/Let-It-Goat-Server for details on what the response contains
@@ -116,15 +130,30 @@ class MainActivity : AppCompatActivity() {
                         //Go to the home screen
                         val i = Intent(this@MainActivity, Home::class.java)
                         startActivity(i)
+                        progressBar.dialog.dismiss()
                     }
                     .addOnFailureListener { exception ->
+                        loginButton.isClickable = true
+                        progressBar.dialog.dismiss()
+                        runOnUiThread {
+                            makeToast("User doesn't exist/ Wrong password...")
+                        }
                         Log.d("", "get failed with ", exception)
                     }
 
 
             } else {
+                loginButton.isClickable = true
+                progressBar.dialog.dismiss()
+                runOnUiThread {
+                    makeToast("User doesn't exist/ Wrong password...")
+                }
+
                 Log.e("","User authentication failed")
             }
         }
+    }
+    fun makeToast(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
     }
 }

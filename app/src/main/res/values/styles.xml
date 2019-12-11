@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -67,6 +67,11 @@
         <item name="selected_height">8dp</item>
         <item name="unselected_width">6dp</item>
         <item name="unselected_height">6dp</item>
+    </style>
+
+    <style name="CustomProgressBarTheme">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 </resources>

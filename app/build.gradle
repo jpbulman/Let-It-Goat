@@ -62,11 +62,6 @@ dependencies {
     //slider
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.3.2'
-//    implementation 'com.nineoldandroids:library:2.4.0'
-//    implementation 'com.daimajia.slider:library:1.1.5@aar'
-//    implementation 'com.squareup.okhttp:okhttp:2.7.5'
-//    implementation 'com.squareup.okhttp:okhttp-urlconnection:2.7.5'
-//    implementation 'com.squareup.picasso:picasso:2.3.2'
     //RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     // Category Tab
@@ -76,6 +71,9 @@ dependencies {
     implementation 'com.google.android.libraries.places:places:2.1.0'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
+    // card view
+    implementation 'androidx.cardview:cardview:1.0.0'
+
     implementation project(path: ':image_slider')
 }
 
