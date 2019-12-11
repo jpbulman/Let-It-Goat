@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             val b = baos.toByteArray()
             val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
 
+//            user.profilePicture = bitmapAsString
             user = User(
                 name = user.name,
                 email = user.email,
@@ -75,6 +76,8 @@ class MainActivity : AppCompatActivity() {
             val (a, response, result) = Fuel.post("https://snow-magnesium.glitch.me/login",
                 listOf("username" to username, "password" to pwdField.text.toString()))
                 .responseString()
+
+
             /*
                 Convert the login response to a JSON
                 See https://github.com/jpbulman/Let-It-Goat-Server for details on what the response contains
@@ -87,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 val docRef = database.collection("Users").document(username)
                 docRef.get()
                     .addOnSuccessListener { document ->
-                        if (document != null) {
+                        if (document.data != null) {
                             user = User(
                                 name = document.data?.get("name").toString(),
                                 email = document.data?.get("email").toString(),
@@ -102,22 +105,23 @@ class MainActivity : AppCompatActivity() {
 
                             //Create a DB data object
                             val currUser = User(
-                                name = username,
-                                email = json["name"].toString(),
+                                email = username,
+                                name = json["name"].toString(),
                                 profilePicture = bitmapAsString
                             )
                             user = currUser
                             //Add it to the DB
                             database.collection("Users").document(username).set(currUser)
                         }
+                        //Go to the home screen
+                        val i = Intent(this@MainActivity, Home::class.java)
+                        startActivity(i)
                     }
                     .addOnFailureListener { exception ->
                         Log.d("", "get failed with ", exception)
                     }
 
-                //Go to the home screen
-                val i = Intent(this@MainActivity, Home::class.java)
-                startActivity(i)
+
             } else {
                 Log.e("","User authentication failed")
             }
