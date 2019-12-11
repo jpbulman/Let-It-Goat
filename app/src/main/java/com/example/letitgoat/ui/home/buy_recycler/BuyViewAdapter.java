@@ -199,39 +199,44 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void updateListItem(int position, File video) {
-        RecyclerView view = ((Activity) mContext).findViewById(R.id.buy_recyclerview);
-        View v = view.getLayoutManager().findViewByPosition(position);
+        try {
+            RecyclerView view = ((Activity) mContext).findViewById(R.id.buy_recyclerview);
+            View v = view.getLayoutManager().findViewByPosition(position);
 
-        if(v == null) {
-            return;
+            if(v == null) {
+                return;
+            }
+
+            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
+                    0,
+                    0,
+                    0
+            );
+
+            LinearLayout.LayoutParams videoParams = new LinearLayout.LayoutParams(
+                    0,
+                    500,
+                    2
+            );
+            videoParams.leftMargin = 45;
+
+            ImageView imageView = v.findViewById(R.id.itemImage);
+            imageView.setLayoutParams(imageParams);
+
+            VideoView vid = v.findViewById(R.id.itemVideo);
+            vid.setVideoURI(Uri.fromFile(video));
+            vid.setLayoutParams(videoParams);
+            vid.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.setLooping(true);
+                }
+            });
+            vid.start();
+        } catch (Exception e) {
+
         }
 
-        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
-                0,
-                0,
-                0
-        );
-
-        LinearLayout.LayoutParams videoParams = new LinearLayout.LayoutParams(
-                0,
-                500,
-                2
-        );
-        videoParams.leftMargin = 45;
-
-        ImageView imageView = v.findViewById(R.id.itemImage);
-        imageView.setLayoutParams(imageParams);
-
-        VideoView vid = v.findViewById(R.id.itemVideo);
-        vid.setVideoURI(Uri.fromFile(video));
-        vid.setLayoutParams(videoParams);
-        vid.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.setLooping(true);
-            }
-        });
-        vid.start();
     }
 
     public static <T> List<T> getRandomSubList(List<T> input, int subsetSize)
