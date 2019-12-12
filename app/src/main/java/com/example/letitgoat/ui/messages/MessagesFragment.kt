@@ -55,7 +55,12 @@ class MessagesFragment : Fragment() {
         }
     }
 
-    private val refreshCallback = {refreshMessages()}
+    val refreshCallback: Runnable = run {
+        Runnable {
+            refreshMessages()
+            handler.postDelayed(refreshCallback, 5000)
+        }
+    }
 
     override fun onResume() {
         super.onResume()

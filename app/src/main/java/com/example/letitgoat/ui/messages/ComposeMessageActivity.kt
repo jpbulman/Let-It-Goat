@@ -18,11 +18,12 @@ class ComposeMessageActivity : AppCompatActivity() {
 
     private val convoArray = arrayListOf<String>("")
     private var recipient = ""
-    var onAdapterChange = {}
+    private var convoAdapter: ArrayAdapter<String>? = null
 
     private val handler = Handler()
 
     fun loadMessages() {
+        println("LOADING MSGS")
         val currUser = MainActivity.user
         if (currUser != null) {
             FirebaseFirestore.getInstance().collection("Messages")
@@ -43,7 +44,8 @@ class ComposeMessageActivity : AppCompatActivity() {
                                 }
                                 convoArray.clear()
                                 convoArray.addAll(newMessages)
-                                onAdapterChange()
+                                convoAdapter!!.notifyDataSetChanged()
+                                findViewById<ListView>(R.id.conversation).smoothScrollToPosition(Integer.MAX_VALUE)
                             }
                     }
 
@@ -51,10 +53,17 @@ class ComposeMessageActivity : AppCompatActivity() {
         }
     }
 
-    val loadCallback = {loadMessages()}
+
+    val loadCallback: Runnable = run {
+        Runnable {
+            loadMessages()
+            handler.postDelayed(loadCallback, 5000)
+        }
+    }
 
     override fun onResume() {
         super.onResume()
+        println("ON RESUME CALLEd")
         handler.postDelayed(loadCallback, 5000)
 
     }
@@ -65,16 +74,15 @@ class ComposeMessageActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        println("ON CREATE CALLED")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compose_message)
         val conversation = findViewById<ListView>(R.id.conversation)
         recipient = intent.getStringExtra("username")
         val sendButton = findViewById<Button>(R.id.sendButton)
         val messageToSend = findViewById<EditText>(R.id.messageToSend)
-        val convoAdapter = ArrayAdapter<String>(this, R.layout.conversation_layout, convoArray)
-        onAdapterChange = {
-            convoAdapter.notifyDataSetChanged()
-        }
+        convoAdapter = ArrayAdapter<String>(this, R.layout.conversation_layout, convoArray)
+
         conversation.adapter = convoAdapter
         loadMessages()
         sendButton.setOnClickListener{
@@ -94,7 +102,6 @@ class ComposeMessageActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         loadMessages()
                     }
-                convoAdapter.notifyDataSetChanged()
                 messageToSend.setText("")
                 conversation.smoothScrollToPosition(Integer.MAX_VALUE)
             } else {
