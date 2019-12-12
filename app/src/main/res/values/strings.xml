@@ -26,4 +26,5 @@
     <string name="description_of_your_product">Description of your product</string>
     <string name="name">Name:</string>
     <string name="being_sold_by">Being sold by:</string>
+    <string name="preference_file_key">LoginPreference</string>
 </resources>

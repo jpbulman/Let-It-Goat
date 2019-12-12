@@ -2,24 +2,22 @@ package com.example.letitgoat
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.letitgoat.Util.LoginUtil
 import com.example.letitgoat.db_models.User
+import com.example.letitgoat.ui.CustomProgressBar
 import com.github.kittinunf.fuel.Fuel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import org.jetbrains.anko.doAsync
-import android.graphics.Bitmap
-import android.util.Base64
-import android.view.View
-import android.widget.Toast
-import com.example.letitgoat.ui.CustomProgressBar
-import org.jetbrains.anko.progressDialog
-import org.jetbrains.anko.runOnUiThread
 import java.io.ByteArrayOutputStream
 
 
@@ -39,29 +37,15 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        doAsync {
-            val defaultImageBitmap = BitmapFactory.decodeResource(resources, R.drawable.blank)
-            val baos = ByteArrayOutputStream()
-            defaultImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-            val b = baos.toByteArray()
-            val bitmapAsString = Base64.encodeToString(b, Base64.DEFAULT)
-
-//            user.profilePicture = bitmapAsString
-            user = User(
-                name = user.name,
-                email = user.email,
-                profilePicture = bitmapAsString
-            )
-        }
-
         this.context = this
+        database = FirebaseFirestore.getInstance()
 
         setContentView(R.layout.activity_main)
-
-        database = FirebaseFirestore.getInstance()
 
         loginButton = findViewById<Button>(R.id.loginButton)
         loginButton.setOnClickListener {
@@ -127,9 +111,10 @@ class MainActivity : AppCompatActivity() {
                             //Add it to the DB
                             database.collection("Users").document(username).set(currUser)
                         }
+
+                        LoginUtil.setLogin(context, user.name, user.email, user.profilePicture)
                         //Go to the home screen
-                        val i = Intent(this@MainActivity, Home::class.java)
-                        startActivity(i)
+                        goToHomepage()
                         progressBar.dialog.dismiss()
                     }
                     .addOnFailureListener { exception ->
@@ -153,7 +138,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     fun makeToast(text: String) {
         Toast.makeText(context, text, Toast.LENGTH_LONG).show()
     }
+
+    fun goToHomepage() {
+        val i = Intent(this@MainActivity, Home::class.java)
+        startActivity(i)
+    }
+
+    override fun onBackPressed() {
+        if (LoginUtil.isLogin(context)) {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (LoginUtil.isLogin(context)) {
+            user = User(
+                name = LoginUtil.getUserName(context),
+                email = LoginUtil.getUserEmail(context),
+                profilePicture = LoginUtil.getUserSelfie(context)
+            )
+            goToHomepage()
+        }
+    }
+
+
 }

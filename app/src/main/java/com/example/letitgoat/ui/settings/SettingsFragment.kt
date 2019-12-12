@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.letitgoat.MainActivity
 import com.example.letitgoat.R
+import com.example.letitgoat.Util.LoginUtil
 import com.example.letitgoat.db_models.User
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
@@ -44,6 +45,7 @@ class SettingsFragment : Fragment() {
                 email ="notloggedin@wpi.edu",
                 profilePicture = ""
             )
+            LoginUtil.setLogout(context)
             startActivity(Intent(activity, MainActivity::class.java))
         }
 
@@ -57,7 +59,7 @@ class SettingsFragment : Fragment() {
         displayUsersFullName.text = MainActivity.user.name
 
         val profilePicture = root.findViewById<ImageView>(R.id.profilePicture)
-        profilePicture.rotation = -90f
+//        profilePicture.rotation = -90f
         val encodeByte = Base64.decode(MainActivity.user.profilePicture, Base64.DEFAULT)
         profilePicture.setImageBitmap(BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size))
 
@@ -78,7 +80,7 @@ class SettingsFragment : Fragment() {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap
             val profilePicture = activity!!.findViewById<ImageView>(R.id.profilePicture)
             profilePicture.setImageBitmap(imageBitmap)
-            profilePicture.rotation = -90f
+//            profilePicture.rotation = -90f
 
             val baos = ByteArrayOutputStream()
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
@@ -90,8 +92,12 @@ class SettingsFragment : Fragment() {
                 email = MainActivity.user.email,
                 profilePicture = bitmapAsString
             )
-
+            val decodedString: ByteArray =
+                Base64.decode(bitmapAsString, Base64.DEFAULT)
+            val decodedByte =
+                BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
             database.collection("Users").document(MainActivity.user.email).set(MainActivity.user)
+            LoginUtil.setUserSelfie(context, bitmapAsString)
         }
     }
 
