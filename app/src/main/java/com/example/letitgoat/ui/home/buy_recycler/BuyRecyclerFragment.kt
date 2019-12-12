@@ -1,20 +1,41 @@
 package com.example.letitgoat.ui.home.buy_recycler
 
-import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.letitgoat.ItemActivity
 import com.example.letitgoat.R
+import com.example.letitgoat.WPILocationHelper
 import com.example.letitgoat.db_models.Item
+import com.example.letitgoat.db_models.User
+import com.example.letitgoat.ui.CustomProgressBar
 import com.example.letitgoat.ui.search.SearchResultsActivity
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import me.dkzwm.widget.srl.RefreshingListenerAdapter
+import me.dkzwm.widget.srl.SmoothRefreshLayout
+import me.dkzwm.widget.srl.extra.footer.ClassicFooter
+import me.dkzwm.widget.srl.extra.footer.MaterialFooter
+import me.dkzwm.widget.srl.extra.header.ClassicHeader
+import me.dkzwm.widget.srl.extra.header.MaterialHeader
+import me.dkzwm.widget.srl.indicator.IIndicator
+import org.jetbrains.anko.doAsync
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 /**
  * A simple [Fragment] subclass.
@@ -31,8 +52,11 @@ class BuyRecyclerFragment : Fragment(),
     private var layoutManager: RecyclerView.LayoutManager? = null
     // TODO: Rename and change types of parameters
     private var title: String? = null
-    private var mListener: OnFragmentInteractionListener? =
-        null
+    private var mListener: OnFragmentInteractionListener? = null
+    private lateinit var db: FirebaseFirestore
+    private var reachedLastItem: Boolean = false
+    private lateinit var refreshLayout: SmoothRefreshLayout
+    private val progressBar = CustomProgressBar()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +77,10 @@ class BuyRecyclerFragment : Fragment(),
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        refreshLayout = getView()?.findViewById(R.id.refreshLayout) as SmoothRefreshLayout
+        refreshLayout.setDisableLoadMore(false)
+
+        db = FirebaseFirestore.getInstance()
         recyclerView = getView()?.findViewById(R.id.buy_recyclerview)
         // use this setting to improve performance if you know that changes
     // in content do not change the layout size of the RecyclerView
@@ -60,17 +88,59 @@ class BuyRecyclerFragment : Fragment(),
         // use a linear layout manager
         layoutManager = LinearLayoutManager(context)
         recyclerView?.layoutManager = layoutManager
+
         // specify an adapter (see also next example)
         if (activity is SearchResultsActivity){
             val activity = activity as SearchResultsActivity
-            mAdapter = BuyViewAdapter(context, title, activity.searchQuery, activity)
+            progressBar.show(activity,"Please Wait...")
+            mAdapter = BuyViewAdapter(context, title, activity.searchQuery, activity, progressBar)
             activity.numItems = mAdapter!!.itemCount
         }
         else {
             mAdapter = BuyViewAdapter(context, title)
+            refreshLayout.setHeaderView(MaterialHeader<IIndicator>(context))
+            refreshLayout.setFooterView(ClassicFooter<IIndicator>(context))
+            refreshLayout.setOnRefreshListener(object : RefreshingListenerAdapter() {
+                override fun onRefreshing() {
+                    doAsync {
+                        val subset: Query
+                        val dbItems: CollectionReference = db.collection("Items")
+                        subset = if (title != "All") {
+                            dbItems.whereEqualTo("category", title).limit(mAdapter!!.itemLimitation.toLong())
+                        } else {
+                            dbItems.limit(mAdapter!!.itemLimitation.toLong())
+                        }
+                        loadData(subset, true, refreshLayout)
+                    }
+
+                }
+
+                override fun onLoadingMore() {
+                    if (reachedLastItem) {
+                        refreshLayout.refreshComplete()
+                        Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                    doAsync {
+                        val subset: Query
+                        val dbItems: CollectionReference = db.collection("Items")
+                        subset = if (title != "All") {
+                            dbItems.whereEqualTo("category", title)
+                                .startAfter( mAdapter!!.lastSnapshot)
+                                .limit(mAdapter!!.itemLimitation.toLong())
+                        } else {
+                            dbItems.startAfter( mAdapter!!.lastSnapshot)
+                                .limit(mAdapter!!.itemLimitation.toLong())
+                        }
+                        loadData(subset, false, refreshLayout)
+                    }
+                }
+            })
+            refreshLayout.autoRefresh()
         }
         mAdapter!!.setClickListener(this)
         recyclerView?.adapter = mAdapter
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -125,4 +195,83 @@ class BuyRecyclerFragment : Fragment(),
             return fragment
         }
     }
+
+    fun loadData(subset: Query , refreshAll: Boolean, refreshLayout: SmoothRefreshLayout) {
+
+        val itemsOnMarket: ArrayList<Item> = ArrayList()
+        val itemsOnMarketIds: ArrayList<String> = ArrayList()
+
+        subset.get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (task.result!!.size() == 0) {
+                        reachedLastItem = true
+                        if (refreshAll) {
+                            Toast.makeText(context, "No item in $title category", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
+                        }
+                        refreshLayout.refreshComplete()
+                    }
+                    for (document in task.result!!) {
+                        val doc =
+                            document.data
+                        val hash =
+                            doc["user"] as HashMap<String, Any>?
+                        val u =
+                            User(
+                                hash!!["email"].toString(),
+                                hash["name"].toString(),
+                                hash["profilePicture"].toString()
+                            )
+                        val d =
+                            (doc["postedTimeStamp"] as Timestamp?)!!.toDate()
+
+                        val wpiLocationHelper =
+                            WPILocationHelper()
+                        var l =
+                            wpiLocationHelper.getLocationOfGordonLibrary()
+                        if (doc["pickupLocation"] != null) {
+                            val mapper =
+                                doc["pickupLocation"] as HashMap<String, Any>?
+                            l =
+                                Location(mapper!!["provider"].toString())
+                            l.latitude =
+                                java.lang.Double.valueOf(mapper["latitude"].toString())
+                            l.longitude =
+                                java.lang.Double.valueOf(mapper["longitude"].toString())
+                        }
+
+                        var category = "other"
+                        if (doc.containsKey("category")) {
+                            category = doc["category"].toString()
+                        }
+                        val i =
+                            Item(
+                                doc["name"].toString(),
+                                java.lang.Double.valueOf(doc["price"].toString()),
+                                u,
+                                doc["description"].toString(),
+                                d,
+                                doc["stringsOfBitmapofPicuresOfItem"] as List<String>,
+                                l,
+                                category
+                            )
+                        itemsOnMarket.add(i)
+                        itemsOnMarketIds.add(document.id)
+                        mAdapter!!.lastSnapshot = document
+                    }
+                    if (refreshAll) {
+                        mAdapter!!.refreshAll(itemsOnMarket, itemsOnMarketIds)
+                    } else {
+                        mAdapter!!.addItemsOnMarket(itemsOnMarket, itemsOnMarketIds)
+                    }
+                    refreshLayout.refreshComplete()
+                } else {
+                    println("Could not get the user's items for selling from the DB")
+                    refreshLayout.refreshComplete()
+                }
+            }
+    }
+
 }

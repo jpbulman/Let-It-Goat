@@ -5,11 +5,17 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="0dp"
     tools:context=".ui.home.buy_recycler.BuyRecyclerFragment">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/buy_recyclerview"
+    <me.dkzwm.widget.srl.SmoothRefreshLayout
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical" />
+        android:orientation="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/buy_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+        </androidx.recyclerview.widget.RecyclerView>
+    </me.dkzwm.widget.srl.SmoothRefreshLayout>
 
 </FrameLayout>
