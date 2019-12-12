@@ -96,6 +96,8 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Query subset;
             if (!isSearchResult && !category.equals("All")) {
                 subset = dbItems.whereEqualTo("category", category).limit(itemLimitation);
+            } else if(isSearchResult){
+                subset = dbItems.limit(100000);
             } else {
                 subset = dbItems.limit(itemLimitation);
             }
