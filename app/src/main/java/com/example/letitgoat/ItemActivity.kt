@@ -1,15 +1,18 @@
 package com.example.letitgoat
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.letitgoat.db_models.Item
+import com.example.letitgoat.ui.messages.ComposeMessageActivity
 import com.example.letitgoat.ui.sell.sell_recycler.SellViewAdapter
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -26,6 +29,15 @@ class ItemActivity : AppCompatActivity() {
         val price = findViewById<TextView>(R.id.single_item_price)
         val description = findViewById<TextView>(R.id.single_item_description)
         val sellerName = findViewById<TextView>(R.id.sellerName)
+
+
+        val messageSellerButton = findViewById<Button>(R.id.messageSellerButton)
+
+        messageSellerButton.setOnClickListener{
+            val intent = Intent(applicationContext, ComposeMessageActivity::class.java)
+            intent.putExtra("username", item.user.email)
+            startActivity(intent)
+        }
 
         name.text = item.name
         price.text = "$" + item.price.toString()
