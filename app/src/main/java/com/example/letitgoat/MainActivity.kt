@@ -11,7 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.letitgoat.Util_tmp.LoginUtil
+import com.example.letitgoat.util.LoginUtil
 import com.example.letitgoat.db_models.User
 import com.example.letitgoat.ui.CustomProgressBar
 import com.github.kittinunf.fuel.Fuel
