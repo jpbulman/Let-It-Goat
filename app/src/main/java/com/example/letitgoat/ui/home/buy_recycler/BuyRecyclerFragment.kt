@@ -205,11 +205,6 @@ class BuyRecyclerFragment : Fragment(),
                 if (task.isSuccessful) {
                     if (task.result!!.size() == 0) {
                         reachedLastItem = true
-                        if (refreshAll) {
-                            Toast.makeText(context, "No item in $title category", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
-                        }
                         refreshLayout.refreshComplete()
                     }
                     for (document in task.result!!) {
