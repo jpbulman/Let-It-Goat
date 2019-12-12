@@ -29,9 +29,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@+id/profilePicture"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:textSize="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
         android:id="@+id/displayUsersFullName"
         android:text="John Smith" />
 
