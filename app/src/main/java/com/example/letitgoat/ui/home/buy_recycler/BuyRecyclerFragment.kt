@@ -118,7 +118,6 @@ class BuyRecyclerFragment : Fragment(),
                 override fun onLoadingMore() {
                     if (reachedLastItem) {
                         refreshLayout.refreshComplete()
-                        Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
                         return
                     }
                     doAsync {
