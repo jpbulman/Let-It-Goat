@@ -229,6 +229,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             vid.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    mp.setVolume(0f, 0f);
                     mp.setLooping(true);
                 }
             });
