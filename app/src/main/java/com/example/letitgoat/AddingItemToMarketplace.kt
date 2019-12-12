@@ -208,7 +208,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap
             val picOfAboutToSellItem = findViewById<ImageView>(R.id.itemAboutToBeSoldPicture)
             picOfAboutToSellItem.setImageBitmap(imageBitmap)
-            picOfAboutToSellItem.rotation = 90f
+//            picOfAboutToSellItem.rotation = 90f
             val params = picOfAboutToSellItem.layoutParams as LinearLayout.LayoutParams
             params.width = 800
             params.height = 600

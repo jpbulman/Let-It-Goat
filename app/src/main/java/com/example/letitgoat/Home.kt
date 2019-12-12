@@ -41,8 +41,6 @@ class Home : AppCompatActivity() {
         }
     }
 
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
         // Associate searchable configuration with the SearchView
@@ -55,5 +53,4 @@ class Home : AppCompatActivity() {
 
         return true
     }
-
 }
