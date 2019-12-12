@@ -60,7 +60,10 @@ class MainActivity : AppCompatActivity() {
         val pwdField = findViewById<EditText>(R.id.passwordField)
 
         doAsync{
-            val username = unameField.text.toString()
+            var username = unameField.text.toString()
+            if (!username.endsWith("@wpi.edu")) {
+                username += "@wpi.edu"
+            }
 
             //DO NOT GET RID OF THESE TWO UNUSED VARIABLES
             //As stupid as it may be, Fuel, the HTTP-Request library, doesn't work if they're not there
