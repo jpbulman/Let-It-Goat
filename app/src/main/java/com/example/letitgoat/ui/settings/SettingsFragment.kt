@@ -92,10 +92,6 @@ class SettingsFragment : Fragment() {
                 email = MainActivity.user.email,
                 profilePicture = bitmapAsString
             )
-            val decodedString: ByteArray =
-                Base64.decode(bitmapAsString, Base64.DEFAULT)
-            val decodedByte =
-                BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
             database.collection("Users").document(MainActivity.user.email).set(MainActivity.user)
             LoginUtil.setUserSelfie(context, bitmapAsString)
         }
