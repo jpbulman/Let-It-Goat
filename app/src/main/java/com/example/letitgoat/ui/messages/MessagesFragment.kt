@@ -49,11 +49,7 @@ class MessagesFragment : Fragment() {
                             }
                             chatArray.clear()
                             chatArray.addAll(allUsers)
-                            val chatAdapterCopy = chatAdapter
-                            if (chatAdapterCopy != null) {
-                                chatAdapterCopy.notifyDataSetChanged()
-
-                            }
+                            chatAdapter!!.notifyDataSetChanged()
                         }
 
         }
@@ -86,9 +82,8 @@ class MessagesFragment : Fragment() {
         if (currContext == null) {
             return root
         } else {
-            val chatListAdapter =
-                ArrayAdapter<String>(currContext, R.layout.conversation_layout, chatArray)
-            chatList.adapter = chatListAdapter
+            chatAdapter = ArrayAdapter<String>(currContext, R.layout.conversation_layout, chatArray)
+            chatList.adapter = chatAdapter
             refreshMessages()
             chatList.setOnItemClickListener {_, _, position, _ ->
                 val intent = Intent(currContext, ComposeMessageActivity::class.java)
@@ -96,8 +91,6 @@ class MessagesFragment : Fragment() {
                 startActivity(intent)
             }
         }
-
-
 
         setHasOptionsMenu(true)
         return root
