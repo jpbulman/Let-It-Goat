@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         doAsync{
             var username = unameField.text.toString()
+            username = username.replace("\\s".toRegex(), "")
             if (!username.endsWith("@wpi.edu")) {
                 username += "@wpi.edu"
             }
