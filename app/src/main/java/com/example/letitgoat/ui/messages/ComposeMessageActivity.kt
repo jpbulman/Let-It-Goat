@@ -2,6 +2,7 @@ package com.example.letitgoat.ui.messages
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -19,6 +20,8 @@ class ComposeMessageActivity : AppCompatActivity() {
     private var recipient = ""
     var onAdapterChange = {}
 
+    private val handler = Handler()
+
     fun loadMessages() {
         val currUser = MainActivity.user
         if (currUser != null) {
@@ -33,17 +36,32 @@ class ComposeMessageActivity : AppCompatActivity() {
                             val allMessages = sentMessages.toObjects(Message::class.java)
                             allMessages.addAll(receivedMessages.toObjects(Message::class.java))
                             allMessages.sortBy { m -> m.timeSent }
-                            convoArray.clear()
                             runOnUiThread{
+                                val newMessages = arrayListOf<String>()
                                 for (message in allMessages) {
-                                    convoArray.add(message.sender + "\n" + message.contents)
-                                    onAdapterChange()
+                                    newMessages.add(message.sender + "\n" + message.contents)
                                 }
+                                convoArray.clear()
+                                convoArray.addAll(newMessages)
+                                onAdapterChange()
                             }
                     }
 
                 }
         }
+    }
+
+    val loadCallback = {loadMessages()}
+
+    override fun onResume() {
+        super.onResume()
+        handler.postDelayed(loadCallback, 5000)
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(loadCallback)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,14 +92,13 @@ class ComposeMessageActivity : AppCompatActivity() {
                     .collection("Messages")
                     .add(message)
                     .addOnSuccessListener {
-                        System.out.println("DOCUMENT INSERTED")
                         loadMessages()
                     }
                 convoAdapter.notifyDataSetChanged()
                 messageToSend.setText("")
                 conversation.smoothScrollToPosition(Integer.MAX_VALUE)
             } else {
-                System.out.println("NULLLLLLLLLLLLLLLLLLLLLL")
+                System.out.println("Null was detected")
             }
         }
     }
