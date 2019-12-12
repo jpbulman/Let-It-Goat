@@ -40,6 +40,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -65,12 +66,14 @@ import java.util.Random;
 class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ItemClickListener mClickListener;
     private Context mContext;
-    private List<Item> itemsOnMarket;
-    private List<String> itemsOnMarketIds;
+    public List<Item> itemsOnMarket;
+    public List<String> itemsOnMarketIds;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private boolean isSearchResult = false;
     private Activity searchActivity = null;
+    private int itemLimitation = 5;
+    public DocumentSnapshot lastSnapshot;
 
     BuyViewAdapter(Context mContext, String category) {
         this(mContext, category, null, null);
@@ -86,13 +89,12 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (searchQuery != null) {
             isSearchResult = true;
         }
-
         CollectionReference dbItems = db.collection("Items");
         Query subset;
         if (!isSearchResult && !category.equals("All")) {
-            subset = dbItems.whereEqualTo("category", category);
+            subset = dbItems.whereEqualTo("category", category).limit(itemLimitation);
         } else {
-            subset = dbItems.limit(100);
+            subset = dbItems.limit(itemLimitation);
         }
 
         subset.get()
@@ -101,6 +103,7 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                lastSnapshot = document;
                                 Map<String, Object> doc = document.getData();
                                 HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
                                 User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
@@ -135,20 +138,30 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                                 itemsOnMarket.add(i);
                                 itemsOnMarketIds.add(document.getId());
-                                notifyDataSetChanged();
                             }
                             if (searchActivity != null){
                                 SearchResultsActivity activity = (SearchResultsActivity) searchActivity;
                                 activity.setNumItems(itemsOnMarket.size());
                                 activity.runCallback("numItems");
                             }
-
+                            notifyDataSetChanged();
                         } else {
                             System.out.println("Could not get the user's items for selling from the DB");
                         }
                     }
                 });
     }
+
+    public void addItemsOnMarket(ArrayList<Item> items, ArrayList<String> ids) {
+        itemsOnMarket.addAll(items);
+        itemsOnMarketIds.addAll(ids);
+        notifyDataSetChanged();
+    }
+
+    public void refresh() {
+        notifyAll();
+    }
+
 
     private static File writeByte(byte[] bytes, String docId) {
         File localFile = null;

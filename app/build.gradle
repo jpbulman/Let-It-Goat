@@ -74,7 +74,17 @@ dependencies {
     // card view
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    // swipe
+    implementation 'me.dkzwm.widget.srl:core:1.6.6.8'
+    implementation 'me.dkzwm.widget.srl:ext-util:1.6.6.8'
+    implementation 'me.dkzwm.widget.srl:ext-material:1.6.6.8'
+    implementation 'me.dkzwm.widget.srl:ext-horizontal:1.6.6.8'
+    implementation 'me.dkzwm.widget.srl:ext-classics:1.6.6.8'
+    implementation 'me.dkzwm.widget.srl:ext-two-level:1.6.6.8'
+
+    // slider
     implementation project(path: ':image_slider')
+
 }
 
 apply plugin: 'com.google.gms.google-services'
