@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textColor="#292b2c"
             android:textSize="20sp"
-            android:text="TextView" />
+            android:text="" />
 
         <TextView
             android:id="@+id/price"
@@ -49,19 +49,19 @@
             android:layout_height="wrap_content"
             android:textColor="#292b2c"
             android:textSize="17sp"
-            android:text="TextView" />
+            android:text="" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/location"
-            android:text="TextView" />
+            android:text="" />
 
     </LinearLayout>
 </LinearLayout>
