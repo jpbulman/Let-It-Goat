@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.example.letitgoat.R
 import com.example.letitgoat.WPILocationHelper
 import com.example.letitgoat.db_models.Item
 import com.example.letitgoat.db_models.User
+import com.example.letitgoat.ui.CustomProgressBar
 import com.example.letitgoat.ui.search.SearchResultsActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
@@ -26,7 +28,9 @@ import com.google.firebase.firestore.Query
 import me.dkzwm.widget.srl.RefreshingListenerAdapter
 import me.dkzwm.widget.srl.SmoothRefreshLayout
 import me.dkzwm.widget.srl.extra.footer.ClassicFooter
+import me.dkzwm.widget.srl.extra.footer.MaterialFooter
 import me.dkzwm.widget.srl.extra.header.ClassicHeader
+import me.dkzwm.widget.srl.extra.header.MaterialHeader
 import me.dkzwm.widget.srl.indicator.IIndicator
 import org.jetbrains.anko.doAsync
 import java.util.*
@@ -52,6 +56,7 @@ class BuyRecyclerFragment : Fragment(),
     private lateinit var db: FirebaseFirestore
     private var reachedLastItem: Boolean = false
     private lateinit var refreshLayout: SmoothRefreshLayout
+    private val progressBar = CustomProgressBar()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,18 +88,18 @@ class BuyRecyclerFragment : Fragment(),
         // use a linear layout manager
         layoutManager = LinearLayoutManager(context)
         recyclerView?.layoutManager = layoutManager
+
         // specify an adapter (see also next example)
         if (activity is SearchResultsActivity){
             val activity = activity as SearchResultsActivity
-            mAdapter = BuyViewAdapter(context, title, activity.searchQuery, activity)
+            progressBar.show(activity,"Please Wait...")
+            mAdapter = BuyViewAdapter(context, title, activity.searchQuery, activity, progressBar)
             activity.numItems = mAdapter!!.itemCount
         }
         else {
             mAdapter = BuyViewAdapter(context, title)
-
-            refreshLayout.setHeaderView(ClassicHeader<IIndicator>(context))
+            refreshLayout.setHeaderView(MaterialHeader<IIndicator>(context))
             refreshLayout.setFooterView(ClassicFooter<IIndicator>(context))
-
             refreshLayout.setOnRefreshListener(object : RefreshingListenerAdapter() {
                 override fun onRefreshing() {
                     doAsync {
@@ -131,6 +136,7 @@ class BuyRecyclerFragment : Fragment(),
                     }
                 }
             })
+            refreshLayout.autoRefresh()
         }
         mAdapter!!.setClickListener(this)
         recyclerView?.adapter = mAdapter
@@ -200,7 +206,12 @@ class BuyRecyclerFragment : Fragment(),
                 if (task.isSuccessful) {
                     if (task.result!!.size() == 0) {
                         reachedLastItem = true
-                        Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
+                        if (refreshAll) {
+                            Toast.makeText(context, "No item in $title category", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
+                        }
+                        refreshLayout.refreshComplete()
                     }
                     for (document in task.result!!) {
                         val doc =

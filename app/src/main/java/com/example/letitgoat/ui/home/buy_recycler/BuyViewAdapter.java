@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ import com.example.letitgoat.SingleShotLocationProvider;
 import com.example.letitgoat.WPILocationHelper;
 import com.example.letitgoat.db_models.Item;
 import com.example.letitgoat.db_models.User;
+import com.example.letitgoat.ui.CustomProgressBar;
 import com.example.letitgoat.ui.search.SearchResultsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,98 +72,119 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> itemsOnMarketIds;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
+    private CustomProgressBar customProgressBar;
     private boolean isSearchResult = false;
     private Activity searchActivity = null;
     public int itemLimitation = 10;
     public DocumentSnapshot lastSnapshot;
 
     BuyViewAdapter(Context mContext, String category) {
-        this(mContext, category, null, null);
+        this(mContext, category, null, null, null);
     }
 
-    public BuyViewAdapter(@Nullable final Context context, String category, final String searchQuery, final Activity searchActivity) {
+    public BuyViewAdapter(@Nullable final Context context, final String category, final String searchQuery, final Activity searchActivity, final CustomProgressBar customProgressBar) {
         this.mContext = context;
         this.searchActivity = searchActivity;
         this.storage = FirebaseStorage.getInstance();
         this.db = FirebaseFirestore.getInstance();
         this.itemsOnMarket = new ArrayList<>();
         this.itemsOnMarketIds = new ArrayList<>();
+        this.customProgressBar = customProgressBar;
         if (searchQuery != null) {
             isSearchResult = true;
-        }
-        CollectionReference dbItems = db.collection("Items");
-        Query subset;
-        if (!isSearchResult && !category.equals("All")) {
-            subset = dbItems.whereEqualTo("category", category).limit(itemLimitation);
-        } else {
-            subset = dbItems.limit(itemLimitation);
-        }
+            CollectionReference dbItems = db.collection("Items");
+            Query subset;
+            if (!isSearchResult && !category.equals("All")) {
+                subset = dbItems.whereEqualTo("category", category).limit(itemLimitation);
+            } else {
+                subset = dbItems.limit(itemLimitation);
+            }
 
-        subset.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                lastSnapshot = document;
-                                Map<String, Object> doc = document.getData();
-                                HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
-                                User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
-                                Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
-                                Log.d("check_buy_item", doc.get("name").toString());
-                                WPILocationHelper wpiLocationHelper = new WPILocationHelper();
-                                Location l = wpiLocationHelper.getLocationOfGordonLibrary();
-                                if (doc.get("pickupLocation") != null) {
-                                    HashMap<String, Object> mapper = (HashMap<String, Object>) doc.get("pickupLocation");
-                                    l = new Location(mapper.get("provider").toString());
-                                    l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
-                                    l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
-                                }
-                                if (isSearchResult && !doc.get("name").toString().toLowerCase().contains(searchQuery.toLowerCase())) {
-                                    continue;
-                                }
-                                String category = "other";
-                                if (doc.containsKey("category")) {
-                                    category = doc.get("category").toString();
-                                }
+            subset.get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+//                            if (task.getResult().size() == 0) {
+//                                ((Activity)context).runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Toast.makeText(context, "No item in " + category + " category", Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
+//                            }
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    lastSnapshot = document;
+                                    Map<String, Object> doc = document.getData();
+                                    HashMap<String, Object> hash = (HashMap<String, Object>) doc.get("user");
+                                    User u = new User(hash.get("email").toString(), hash.get("name").toString(), hash.get("profilePicture").toString());
+                                    Date d = ((Timestamp) doc.get("postedTimeStamp")).toDate();
+                                    Log.d("check_buy_item", doc.get("name").toString());
+                                    WPILocationHelper wpiLocationHelper = new WPILocationHelper();
+                                    Location l = wpiLocationHelper.getLocationOfGordonLibrary();
+                                    if (doc.get("pickupLocation") != null) {
+                                        HashMap<String, Object> mapper = (HashMap<String, Object>) doc.get("pickupLocation");
+                                        l = new Location(mapper.get("provider").toString());
+                                        l.setLatitude(Double.valueOf(mapper.get("latitude").toString()));
+                                        l.setLongitude(Double.valueOf(mapper.get("longitude").toString()));
+                                    }
+                                    if (isSearchResult && !doc.get("name").toString().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                        continue;
+                                    }
+                                    String category = "other";
+                                    if (doc.containsKey("category")) {
+                                        category = doc.get("category").toString();
+                                    }
 
-                                Item i = new Item(
-                                        doc.get("name").toString(),
-                                        Double.valueOf(doc.get("price").toString()),
-                                        u,
-                                        doc.get("description").toString(),
-                                        d,
-                                        (List<String>) doc.get("stringsOfBitmapofPicuresOfItem"),
-                                        l,
-                                        category
-                                );
+                                    Item i = new Item(
+                                            doc.get("name").toString(),
+                                            Double.valueOf(doc.get("price").toString()),
+                                            u,
+                                            doc.get("description").toString(),
+                                            d,
+                                            (List<String>) doc.get("stringsOfBitmapofPicuresOfItem"),
+                                            l,
+                                            category
+                                    );
 
-                                itemsOnMarket.add(i);
-                                itemsOnMarketIds.add(document.getId());
+                                    itemsOnMarket.add(i);
+                                    itemsOnMarketIds.add(document.getId());
+                                }
+                                if (searchActivity != null){
+                                    SearchResultsActivity activity = (SearchResultsActivity) searchActivity;
+                                    activity.setNumItems(itemsOnMarket.size());
+                                    activity.runCallback("numItems");
+                                }
+                                notifyDataSetChanged();
+                                if (customProgressBar != null) {
+                                    customProgressBar.dialog.dismiss();
+                                }
+                            } else {
+                                System.out.println("Could not get the user's items for selling from the DB");
                             }
-                            if (searchActivity != null){
-                                SearchResultsActivity activity = (SearchResultsActivity) searchActivity;
-                                activity.setNumItems(itemsOnMarket.size());
-                                activity.runCallback("numItems");
-                            }
-                            notifyDataSetChanged();
-                        } else {
-                            System.out.println("Could not get the user's items for selling from the DB");
                         }
-                    }
-                });
+                    });
+        }
+
     }
 
     public void addItemsOnMarket(ArrayList<Item> items, ArrayList<String> ids) {
         itemsOnMarket.addAll(items);
         itemsOnMarketIds.addAll(ids);
         notifyDataSetChanged();
+        if (customProgressBar != null) {
+            customProgressBar.dialog.dismiss();
+        }
+
     }
 
     public void refreshAll(ArrayList<Item> items, ArrayList<String> ids) {
         itemsOnMarket = items;
         itemsOnMarketIds = ids;
         notifyDataSetChanged();
+        if (customProgressBar != null) {
+            customProgressBar.dialog.dismiss();
+        }
     }
 
 
@@ -395,9 +418,9 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 mDemoSlider.addSlider(textSliderView);
             }
-            mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Tablet);
+            mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
             mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-            mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+//            mDemoSlider.setCustomAnimation(new DescriptionAnimation());
             mDemoSlider.startAutoCycle(5000, 5000, true);
             mDemoSlider.addOnPageChangeListener(((SliderViewHolder) holder));
 //            mDemoSlider.stopAutoCycle();
