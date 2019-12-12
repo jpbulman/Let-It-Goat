@@ -66,13 +66,13 @@ import java.util.Random;
 class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ItemClickListener mClickListener;
     private Context mContext;
-    public List<Item> itemsOnMarket;
-    public List<String> itemsOnMarketIds;
+    private List<Item> itemsOnMarket;
+    private List<String> itemsOnMarketIds;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private boolean isSearchResult = false;
     private Activity searchActivity = null;
-    private int itemLimitation = 5;
+    public int itemLimitation = 10;
     public DocumentSnapshot lastSnapshot;
 
     BuyViewAdapter(Context mContext, String category) {
@@ -158,8 +158,10 @@ class BuyViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void refresh() {
-        notifyAll();
+    public void refreshAll(ArrayList<Item> items, ArrayList<String> ids) {
+        itemsOnMarket = items;
+        itemsOnMarketIds = ids;
+        notifyDataSetChanged();
     }
 
 

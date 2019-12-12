@@ -73,26 +73,7 @@ class BuyRecyclerFragment : Fragment(),
     ) {
         super.onViewCreated(view, savedInstanceState)
         refreshLayout = getView()?.findViewById(R.id.refreshLayout) as SmoothRefreshLayout
-        refreshLayout.setHeaderView(ClassicHeader<IIndicator>(context))
-        refreshLayout.setFooterView(ClassicFooter<IIndicator>(context))
         refreshLayout.setDisableLoadMore(false)
-        refreshLayout.setOnRefreshListener(object : RefreshingListenerAdapter() {
-            override fun onRefreshing() {
-                refreshLayout.refreshComplete()
-            }
-
-            override fun onLoadingMore() {
-                if (reachedLastItem) {
-                    refreshLayout.refreshComplete()
-                    Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
-                    return
-                }
-                doAsync {
-                    loadData()
-                }
-                refreshLayout.refreshComplete()
-            }
-        })
 
         db = FirebaseFirestore.getInstance()
         recyclerView = getView()?.findViewById(R.id.buy_recyclerview)
@@ -110,6 +91,46 @@ class BuyRecyclerFragment : Fragment(),
         }
         else {
             mAdapter = BuyViewAdapter(context, title)
+
+            refreshLayout.setHeaderView(ClassicHeader<IIndicator>(context))
+            refreshLayout.setFooterView(ClassicFooter<IIndicator>(context))
+
+            refreshLayout.setOnRefreshListener(object : RefreshingListenerAdapter() {
+                override fun onRefreshing() {
+                    doAsync {
+                        val subset: Query
+                        val dbItems: CollectionReference = db.collection("Items")
+                        subset = if (title != "All") {
+                            dbItems.whereEqualTo("category", title).limit(mAdapter!!.itemLimitation.toLong())
+                        } else {
+                            dbItems.limit(mAdapter!!.itemLimitation.toLong())
+                        }
+                        loadData(subset, true, refreshLayout)
+                    }
+
+                }
+
+                override fun onLoadingMore() {
+                    if (reachedLastItem) {
+                        refreshLayout.refreshComplete()
+                        Toast.makeText(context, "I am the bottom line...", Toast.LENGTH_LONG).show()
+                        return
+                    }
+                    doAsync {
+                        val subset: Query
+                        val dbItems: CollectionReference = db.collection("Items")
+                        subset = if (title != "All") {
+                            dbItems.whereEqualTo("category", title)
+                                .startAfter( mAdapter!!.lastSnapshot)
+                                .limit(mAdapter!!.itemLimitation.toLong())
+                        } else {
+                            dbItems.startAfter( mAdapter!!.lastSnapshot)
+                                .limit(mAdapter!!.itemLimitation.toLong())
+                        }
+                        loadData(subset, false, refreshLayout)
+                    }
+                }
+            })
         }
         mAdapter!!.setClickListener(this)
         recyclerView?.adapter = mAdapter
@@ -169,17 +190,8 @@ class BuyRecyclerFragment : Fragment(),
         }
     }
 
-    fun loadData() {
-        val dbItems: CollectionReference = db.collection("Items")
-        val subset: Query
-        subset = if (title != "All") {
-            dbItems.whereEqualTo("category", title)
-                .startAfter( mAdapter!!.lastSnapshot)
-                .limit(10)
-        } else {
-            dbItems.startAfter( mAdapter!!.lastSnapshot)
-                .limit(10)
-        }
+    fun loadData(subset: Query , refreshAll: Boolean, refreshLayout: SmoothRefreshLayout) {
+
         val itemsOnMarket: ArrayList<Item> = ArrayList()
         val itemsOnMarketIds: ArrayList<String> = ArrayList()
 
@@ -238,9 +250,15 @@ class BuyRecyclerFragment : Fragment(),
                         itemsOnMarketIds.add(document.id)
                         mAdapter!!.lastSnapshot = document
                     }
-                    mAdapter!!.addItemsOnMarket(itemsOnMarket, itemsOnMarketIds)
+                    if (refreshAll) {
+                        mAdapter!!.refreshAll(itemsOnMarket, itemsOnMarketIds)
+                    } else {
+                        mAdapter!!.addItemsOnMarket(itemsOnMarket, itemsOnMarketIds)
+                    }
+                    refreshLayout.refreshComplete()
                 } else {
                     println("Could not get the user's items for selling from the DB")
+                    refreshLayout.refreshComplete()
                 }
             }
     }
