@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.letitgoat.MainActivity
 import com.example.letitgoat.R
-import com.example.letitgoat.Util.LoginUtil
+import com.example.letitgoat.util.LoginUtil
 import com.example.letitgoat.db_models.User
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
