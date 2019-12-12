@@ -1,4 +1,4 @@
-package com.example.letitgoat.util;
+package com.example.letitgoat.Util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
