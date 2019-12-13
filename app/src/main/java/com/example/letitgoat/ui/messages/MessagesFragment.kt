@@ -34,7 +34,9 @@ class MessagesFragment : Fragment() {
                     FirebaseFirestore.getInstance().collection("Messages")
                         .whereEqualTo("recipient", MainActivity.user.email)
                         .get().addOnSuccessListener { receivedMessages ->
-                            val allMessages = sentMessages.toObjects(Message::class.java)
+                            var allMessages = sentMessages
+                                .toObjects(Message::class.java)
+                            allMessages.addAll(receivedMessages.toObjects(Message::class.java))
                             allMessages.sortByDescending { m -> m.timeSent }
                             val allUsers = arrayListOf<String>()
                             println("\n\n\nPRINTING MSGS")

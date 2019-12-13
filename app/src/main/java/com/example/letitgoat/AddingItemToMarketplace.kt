@@ -83,7 +83,7 @@ class AddingItemToMarketplace : AppCompatActivity() {
             name.setOnClickListener{
                 Toast.makeText(applicationContext,"You can not modify item name...",Toast.LENGTH_SHORT).show()
             }
-            price.setText(item.price.toString())
+            price.setText(String.format("%.2f", item.price).replace(",", "."))
             description.setText(item.description)
 
             addButton.setOnClickListener{
@@ -134,13 +134,14 @@ class AddingItemToMarketplace : AppCompatActivity() {
             addButton.setOnClickListener{
                 addItemToMarketplace()
             }
-
-            val sellerName = findViewById<TextView>(R.id.sellerName)
-            sellerName.text = "${MainActivity.user.name}"
         }
+
+        val sellerName = findViewById<TextView>(R.id.sellerName)
+        sellerName.text = "${MainActivity.user.name}"
 
         database = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
+
 
         val spinnercategories: Spinner = findViewById(R.id.spinner_categories)
         // Create an ArrayAdapter using the string array and a default spinner layout

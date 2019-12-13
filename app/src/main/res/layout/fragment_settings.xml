@@ -6,35 +6,33 @@
     android:layout_height="match_parent" >
 
     <ImageView
+        android:id="@+id/profilePicture"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:id="@+id/profilePicture"
-        android:src="@drawable/blank" />
+        android:src="@drawable/blank"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/newProfilePictureButton"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/profilePicture"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:src="@drawable/icons8_camera_24"
-        android:layout_marginStart="57.5dp" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="37.5dp"
+        app:layout_constraintTop_toBottomOf="@id/profilePicture" />
 
     <TextView
+        android:id="@+id/displayUsersFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/profilePicture"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
+        android:text="John Smith"
         android:textSize="20sp"
-        android:id="@+id/displayUsersFullName"
-        android:text="John Smith" />
+        app:layout_constraintLeft_toRightOf="@+id/profilePicture"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:layout_width="match_parent"
