@@ -20,5 +20,5 @@ Every person who uses this app must have a valid WPI login. To validate identity
 ## Database
 ![firebase logo](https://huang-an-sheng.gallerycdn.vsassets.io/extensions/huang-an-sheng/firebase-web-app-snippets/1.1.6/1563878238121/Microsoft.VisualStudio.Services.Icons.Default)
 
-For our database, we decided to go with Firestore.
+For our database, we decided to use a Firestore instance.
 
