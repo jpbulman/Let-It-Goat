@@ -1,6 +1,9 @@
 # Let It Goat
 This is an Android app that targets WPI students to resell their used possessions (such as textbooks, furniture, etc.).
 
+## Video Demonstration
+https://youtu.be/oDVOmLqJR3Y
+
 ## Building and running
 
 The app uses the standard Android project format and requires Android Studio and Gradle to build. Additionally, the app supports a minimum 
